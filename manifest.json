@@ -1,0 +1,17 @@
+{
+  "manifest_version": 2,
+  "name": "Hex Browser",
+  "version": "0.1",
+  "author": "Sam Lanning <sam@samlanning.com>",
+
+  "description": "An experimental browser that runs in chrome.",
+  "icons": {
+
+  },
+
+  "app": {
+    "background": {
+      "scripts": ["background.js"]
+    }
+  }
+}
