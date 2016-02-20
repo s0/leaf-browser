@@ -1,0 +1,12 @@
+{
+  "name": "hex-browser",
+  "repository": "https://github.com/samlanning/hex-browser.git",
+  "version": "0.0.0",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-cli": "^0.1.13",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-contrib-less": "^1.2.0",
+    "grunt-contrib-watch": "^0.6.1"
+  }
+}

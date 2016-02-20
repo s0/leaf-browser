@@ -1,0 +1,41 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #eee;
+  margin: 0;
+  padding: 0;
+}
+
+#main-container {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+
+  > .inner {
+    display: flex;
+    height: 100%;
+
+    > .app-left {
+      width: 300px;
+      height: 100%;
+      background-color: #ddd;
+
+      .logo {
+        width: 100%;
+        padding: 10px 20px;
+        line-height: 40px;
+        font-size: 30px;
+        text-align: center;
+        background-color: #ccc;
+      }
+    }
+
+    > .app-right {
+      height: 100%;
+      flex-grow: 1;
+      background-color: #eee;
+    }
+  }
+}
