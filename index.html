@@ -6,6 +6,17 @@
     <script data-main="js/main" src="js/lib/require.js"></script>
   </head>
   <body>
+    <div id="templates">
+      <div data-template="tab-tree-node">
+        <div class="node">
+          <div class="button">
+            <div class="label"></div>
+          </div>
+          <div class="children">
+          </div>
+        </div>
+      </div>
+    </div>
     <div id="main-container">
       <div class="inner">
         <div class="app-left">
@@ -14,54 +25,7 @@
           </div>
           <div class="scroll">
             <div class="scroll-content">
-              <div class="tab-tree">
-                <div class="node">
-                  <div class="button">
-                    <div class="label">
-                      Some Tab Name
-                    </div>
-                  </div>
-                  <div class="children">
-                    <div class="node">
-                      <div class="button">
-                        <div class="label">
-                          Some Tab Name
-                        </div>
-                      </div>
-                      <div class="children">
-                      </div>
-                    </div>
-                    <div class="node">
-                      <div class="button">
-                        <div class="label">
-                          Some Tab Name
-                        </div>
-                      </div>
-                      <div class="children">
-                      </div>
-                    </div>
-                    <div class="node">
-                      <div class="button">
-                        <div class="label">
-                          Some Tab Name
-                        </div>
-                      </div>
-                      <div class="children">
-                        <div class="node">
-                          <div class="button">
-                            <div class="label">
-                              Some Tab Name
-                            </div>
-                          </div>
-                          <div class="children">
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-              </div>
+              <div class="tab-tree"></div>
               <div class="new-tab-button">
                 New Tab
               </div>

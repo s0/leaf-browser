@@ -1,9 +1,16 @@
-require([], function(){
+require(['tabs'], function(tabs){
   'use strict';
 
   $(document).ready(function(){
 
-    alert("The app window loaded");
+    var _templates = {};
+
+    $('#templates').children().each(function(){
+      var $this = $(this);
+      _templates[$this.data('template')] = $this.children().first();
+    });
+
+    tabs.init(_templates);
 
   });
 });

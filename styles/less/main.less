@@ -79,8 +79,12 @@ body {
             .node {
 
               .button {
+                margin-top: -1px;
                 .app-left-button();
-                border-top: none;
+              }
+
+              &.selected > .button {
+                background-color: #d6d6d6;
               }
 
               .children {
