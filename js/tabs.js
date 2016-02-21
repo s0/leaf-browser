@@ -11,12 +11,17 @@ define([], function(){
     $tab_tree = $('.tab-tree');
 
     var $new_tab_button = $('.new-tab-button');
-    $new_tab_button.click(open_new_tab);
+    $new_tab_button.click(open_root_tab);
+  }
+
+  function open_root_tab(){
+    var _tab = new Tab();
+    _tab.append_to_root();
   }
 
   function open_new_tab(){
     var _tab = new Tab();
-    _tab.append_to_current();
+    _tab.append_to_tab(_current);
   }
 
   function Tab(){
@@ -43,8 +48,15 @@ define([], function(){
     this.$node.removeClass('selected');
   }
 
-  Tab.prototype.append_to_current = function(){
-    this.$node.appendTo(_current ? _current.$node.children('.children') : $tab_tree);
+  Tab.prototype.append_to_tab = function(tab){
+    if (tab)
+      this.$node.appendTo(tab.$node.children('.children'));
+    else
+      this.append_to_root();
+  }
+
+  Tab.prototype.append_to_root = function(){
+    this.$node.appendTo($tab_tree);
   }
 
   return {

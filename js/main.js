@@ -1,4 +1,4 @@
-require(['tabs'], function(tabs){
+require(['keybindings', 'tabs'], function(keybindings, tabs){
   'use strict';
 
   $(document).ready(function(){
@@ -10,6 +10,7 @@ require(['tabs'], function(tabs){
       _templates[$this.data('template')] = $this.children().first();
     });
 
+    keybindings.init();
     tabs.init(_templates);
 
   });
