@@ -35,33 +35,33 @@ define([], function(){
 
   Tab.prototype.node_clicked = function(){
     this.select_tab();
-  }
+  };
 
   Tab.prototype.select_tab = function(){
     if(_current)
       _current.unselect_tab();
     _current = this;
     this.$node.addClass('selected');
-  }
+  };
 
   Tab.prototype.unselect_tab = function(){
     this.$node.removeClass('selected');
-  }
+  };
 
   Tab.prototype.append_to_tab = function(tab){
     if (tab)
       this.$node.appendTo(tab.$node.children('.children'));
     else
       this.append_to_root();
-  }
+  };
 
   Tab.prototype.append_to_root = function(){
     this.$node.appendTo($tab_tree);
-  }
+  };
 
   return {
     init: init,
     open_new_tab: open_new_tab
-  }
+  };
 
 });

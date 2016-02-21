@@ -3,13 +3,18 @@ define(['tabs'], function(tabs){
 
   var KEYCODES = {
     T: 84
-  }
+  };
 
   function init() {
 
     $(window).keyup(function(e){
-      if (e.ctrlKey && e.which == KEYCODES.T) {
-        tabs.open_new_tab();
+      switch(e.which){
+        case KEYCODES.T:
+          if(e.ctrlKey)
+            tabs.open_new_tab();
+          break;
+        default:
+          console.log(e);
       }
     });
 

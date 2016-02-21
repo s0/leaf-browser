@@ -1,6 +1,7 @@
 module.exports = function(grunt) {
     'use strict';
 
+    grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
@@ -21,8 +22,15 @@ module.exports = function(grunt) {
                 files: ['styles/**/*.less'],
                 tasks: ['less'],
             }
-        }
+        },
+        jshint: {
+          files: [
+            'Gruntfile.js',
+            'js/**/*.js',
+            '!js/lib/**/*.js',
+          ],
+        },
     });
 
-    grunt.registerTask('default', ['less', 'watch']);
+    grunt.registerTask('default', ['jshint', 'less', 'watch']);
 };
