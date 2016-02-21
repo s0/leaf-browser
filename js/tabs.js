@@ -36,6 +36,8 @@ define(['storage'], function(storage){
       if(!(id in tabs.tabs))
         tab.update_by_data(undefined);
     });
+    if(_current && !(_current in _tabs))
+      _current = null;
   }
 
   function open_root_tab(){
@@ -113,9 +115,9 @@ define(['storage'], function(storage){
   };
 
   Tab.prototype.select_tab = function(){
-    if(_current)
-      _current.unselect_tab();
-    _current = this;
+    if(_current && _current in _tabs)
+      _tabs[_current].unselect_tab();
+    _current = this.id;
     this.$node.addClass('selected');
   };
 
@@ -123,9 +125,9 @@ define(['storage'], function(storage){
     this.$node.removeClass('selected');
   };
 
-  Tab.prototype.append_to_tab = function(tab){
-    if (tab){
-      this.parent = tab.id;
+  Tab.prototype.append_to_tab = function(id){
+    if (id){
+      this.parent = id;
       this.store_tab_data();
     } else {
       this.append_to_root();
