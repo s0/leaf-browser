@@ -3,7 +3,7 @@ define(['constants', 'storage','tabs'], function(C, storage, tabs){
 
   function init() {
 
-    $(window).keyup(function(e){
+    $(window).keydown(function(e){
       switch(e.which){
         case C.KEYCODES.T:
           if(e.ctrlKey)
@@ -12,6 +12,11 @@ define(['constants', 'storage','tabs'], function(C, storage, tabs){
         case C.KEYCODES.Q:
           if(e.ctrlKey)
             storage.clear();
+          break;
+        case C.KEYCODES.W:
+          if(e.ctrlKey)
+            console.log("close window key");
+            e.preventDefault();
           break;
         case C.KEYCODES.L:
           if(e.ctrlKey)

@@ -5,7 +5,8 @@ define([], function(){
     ENTER: 13,
     L: 76,
     Q: 81,
-    T: 84
+    T: 84,
+    W: 87
   };
 
   var REGEXES = {
