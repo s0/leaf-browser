@@ -1,22 +1,21 @@
-define(['storage','tabs'], function(storage, tabs){
+define(['constants', 'storage','tabs'], function(C, storage, tabs){
   'use strict';
-
-  var KEYCODES = {
-    Q: 81,
-    T: 84
-  };
 
   function init() {
 
     $(window).keyup(function(e){
       switch(e.which){
-        case KEYCODES.T:
+        case C.KEYCODES.T:
           if(e.ctrlKey)
             tabs.open_new_tab();
           break;
-        case KEYCODES.Q:
+        case C.KEYCODES.Q:
           if(e.ctrlKey)
             storage.clear();
+          break;
+        case C.KEYCODES.L:
+          if(e.ctrlKey)
+            tabs.focus_address_bar();
           break;
         default:
           console.log(e);

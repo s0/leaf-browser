@@ -1,4 +1,4 @@
-define(['storage'], function(storage){
+define(['constants', 'storage'], function(C, storage){
   'use strict';
 
   var _next_tab_id = 0;
@@ -59,6 +59,11 @@ define(['storage'], function(storage){
     });
   }
 
+  function focus_address_bar(){
+    if(_current && (_current in _tabs))
+      _tabs[_current].focus_address_bar();
+  }
+
   function get_free_tab_id (callback){
     storage.load_tabs(function(tabs){
       var _id = 0;
@@ -66,6 +71,22 @@ define(['storage'], function(storage){
         _id ++;
       callback(_id);
     });
+  }
+
+  function address_bar_text_to_url(text){
+    console.log(C.REGEXES.DOMAIN.exec(text));
+    if (C.REGEXES.DOMAIN.exec(text)) {
+      return "https://" + text;
+    }
+    if (C.REGEXES.URL.exec(text)) {
+      return text;
+    }
+    // Return a google search
+    return 'https://www.google.com/search?q=' + text;
+  }
+
+  function url_to_address_bar_text(url){
+    return url;
   }
 
   function Tab(id, tab_data){
@@ -179,9 +200,41 @@ define(['storage'], function(storage){
     var $input_address_bar = this.$content.find('input.address-bar');
     var $input_tab_name = this.$content.find('input.tab-name');
 
+    var _webview = this.$content.find('webview').get(0);
+
     $button_settings.click(function(){
       $tabs.toggleClass('show-settings');
     });
+
+    this.focus_address_bar();
+
+    $input_address_bar.keyup(function(e){
+      if(e.which === C.KEYCODES.ENTER){
+
+        var _url = address_bar_text_to_url($input_address_bar.val());
+        $input_address_bar.val(url_to_address_bar_text(_url));
+        _webview.src = _url
+
+      }
+    });
+
+    _webview.addEventListener("loadredirect", function(e){
+      if(e.isTopLevel){
+        $input_address_bar.val(url_to_address_bar_text(e.newUrl));
+      }
+    });
+    _webview.addEventListener("loadstart", function(e){
+      if(e.isTopLevel){
+        $input_address_bar.val(url_to_address_bar_text(e.url));
+      }
+    });
+    _webview.addEventListener("loadstop", function(){
+      console.log("load stop");
+    });
+  };
+
+  Tab.prototype.focus_address_bar = function(){
+    this.$content.find('input.address-bar').focus().select();
   };
 
   Tab.prototype.unselect_tab = function(){
@@ -210,7 +263,8 @@ define(['storage'], function(storage){
 
   return {
     init: init,
-    open_new_tab: open_new_tab
+    open_new_tab: open_new_tab,
+    focus_address_bar: focus_address_bar
   };
 
 });
