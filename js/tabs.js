@@ -51,6 +51,7 @@ define(['storage'], function(storage){
     get_free_tab_id(function(id){
       var _tab = new Tab(id);
       _tab.append_to_tab(_current);
+      _tab.select_tab();
     });
   }
 
