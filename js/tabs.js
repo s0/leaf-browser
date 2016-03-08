@@ -112,7 +112,7 @@ define(['storage'], function(storage){
     }
     this.parent = data.parent;
 
-    if (data.expanded || data.expanded === undefined) {
+    if (data.expanded) {
       this.expanded = true;
       this.$node.addClass('expanded');
     } else {
@@ -163,6 +163,11 @@ define(['storage'], function(storage){
     if (id){
       this.parent = id;
       this.store_tab_data();
+      var _parent_tab = _tabs[this.parent];
+      if(!_parent_tab.expanded){
+        _parent_tab.expanded = true;
+        _parent_tab.store_tab_data();
+      }
     } else {
       this.append_to_root();
     }
