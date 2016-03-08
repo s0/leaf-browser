@@ -67,6 +67,7 @@ define(['storage'], function(storage){
     _tabs[id] = this;
     this.id = id;
     this.$node = $node_template.clone();
+    this.$children = this.$node.children('.children').first();
     this.parent = null;
 
     if (tab_data === undefined) {
@@ -78,8 +79,12 @@ define(['storage'], function(storage){
     }
 
     // Setup New Tab
-    this.$node.find('.label').text('New Tab: ' + id);
-    this.$node.find('.button').click(this.node_clicked.bind(this));
+    var $tab = this.$node.children('.tab');
+    var $button = $tab.find('.button');
+    var $arrow = $tab.find('.arrow');
+    $button.click(this.button_clicked.bind(this));
+    $button.text('New Tab: ' + id);
+    $arrow.click(this.arrow_clicked.bind(this));
   }
 
   Tab.prototype.update_by_data = function(data){
@@ -90,28 +95,57 @@ define(['storage'], function(storage){
       this.$node.remove();
       return;
     }
-    if (data.parent)
-      this.parent = data.parent;
-    if (data.parent){
-      var _parent_tab = _tabs[data.parent];
-      if (_parent_tab){
-        this.$node.appendTo(_parent_tab.$node.children('.children'));
+
+    // Parent
+    if (this.parent !== data.parent || !this.setup) {
+      if (data.parent){
+        var _parent_tab = _tabs[data.parent];
+        if (_parent_tab){
+          this.$node.appendTo(_parent_tab.$children);
+          _parent_tab.update_display();
+        } else {
+          console.error("Parent does not exist");
+        }
       } else {
-        console.error("Parent does not exist");
+        this.$node.appendTo($tab_tree);
       }
+    }
+    this.parent = data.parent;
+
+    if (data.expanded || data.expanded === undefined) {
+      this.expanded = true;
+      this.$node.addClass('expanded');
     } else {
-      this.$node.appendTo($tab_tree);
+      this.expanded = false;
+      this.$node.removeClass('expanded');
+    }
+
+    this.setup = true;
+    this.update_display();
+  };
+
+  Tab.prototype.update_display = function(){
+    if (this.$children.children().length === 0) {
+      this.$node.removeClass('has-children');
+    } else {
+      this.$node.addClass('has-children');
     }
   };
 
   Tab.prototype.store_tab_data = function(){
     storage.set_tab_data(this.id, {
-      parent: this.parent
+      parent: this.parent,
+      expanded: this.expanded
     });
   };
 
-  Tab.prototype.node_clicked = function(){
+  Tab.prototype.button_clicked = function(e){
     this.select_tab();
+  };
+
+  Tab.prototype.arrow_clicked = function(e){
+    this.expanded = !this.expanded;
+    this.store_tab_data();
   };
 
   Tab.prototype.select_tab = function(){

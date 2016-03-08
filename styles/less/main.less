@@ -1,3 +1,5 @@
+@import "glyphicons.less";
+
 * {
   box-sizing: border-box;
 }
@@ -6,6 +8,10 @@ body {
   margin: 0;
   padding: 0;
   background-color: #fff;
+}
+
+#templates {
+  display: none;
 }
 
 #main-container {
@@ -67,6 +73,7 @@ body {
               border: 1px solid #ccc;
               padding: 5px 8px;
               font-size: 12px;
+              line-height: 18px;
               cursor: pointer;
 
               &:hover {
@@ -78,17 +85,59 @@ body {
 
             .node {
 
-              .button {
+              .tab {
                 margin-top: -1px;
-                .app-left-button();
+                position: relative;
+
+                .arrow {
+                  display: none;
+                  position: absolute;
+                  height: 30px;
+                  padding: 8px 0 0 7px;
+                  cursor: pointer;
+
+                  &:hover {
+                    opacity: 0.6;
+                  }
+
+                  span {
+                    color: #666;
+                    transform: rotate(0);
+                    display: inline-block;
+                    transition: transform 0.4s;
+                  }
+                }
+
+                .button {
+                  .app-left-button();
+                  margin-left: 25px;
+                }
               }
 
-              &.selected > .button {
+              &.selected > .tab .button {
                 background-color: #d6d6d6;
               }
 
-              .children {
+              &.has-children > .tab .arrow {
+                display: inline-block;
+              }
+
+              > .children {
                 padding: 0 0 0 20px;
+                overflow: hidden;
+                max-height: 0;
+                transition: max-height 0;
+              }
+
+              &.expanded {
+                > .children {
+                  transition: max-height 0.3s ease-in;
+                  max-height: 999px;
+                }
+
+                > .tab .arrow span {
+                  transform: rotate(90deg);
+                }
               }
             }
 
