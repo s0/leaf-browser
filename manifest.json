@@ -14,5 +14,5 @@
       "scripts": ["background.js"]
     }
   },
-  "permissions": ["storage"]
+  "permissions": ["storage", "webview"]
 }
