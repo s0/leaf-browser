@@ -3,6 +3,8 @@ define([], function(){
 
   var STORAGE_KEY_TABS_DATA = "tabs_data";
 
+  var _tab_data_to_set = {};
+
   function default_tabs_data(){
     return {
       tabs: {}
@@ -27,12 +29,19 @@ define([], function(){
   }
 
   function set_tab_data(id, data, callback){
-    load_tabs(function(tabs){
-      tabs.tabs[id] = data;
-      var _data = {};
-      _data[STORAGE_KEY_TABS_DATA] = tabs;
-      chrome.storage.local.set(_data);
-    });
+    var _perform_load = $.isEmptyObject(_tab_data_to_set);
+    _tab_data_to_set[id] = data;
+    if(_perform_load){
+      load_tabs(function(tabs){
+        $.each(_tab_data_to_set, function(id, data){
+          tabs.tabs[id] = data;
+        });
+        var _data = {};
+        _data[STORAGE_KEY_TABS_DATA] = tabs;
+        chrome.storage.local.set(_data);
+        _tab_data_to_set = {};
+      });
+    }
   }
 
   function clear(){
