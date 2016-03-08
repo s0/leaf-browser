@@ -3,13 +3,17 @@ define(['storage'], function(storage){
 
   var _next_tab_id = 0;
   var $node_template;
+  var $tab_content_template;
   var $tab_tree;
+  var $tabs;
   var _current;
   var _tabs = {};
 
   function init(templates){
     $node_template = templates['tab-tree-node'];
+    $tab_content_template = templates['tab-content'];
     $tab_tree = $('.tab-tree');
+    $tabs = $('.app-right .tabs');
 
     var $new_tab_button = $('.new-tab-button');
     $new_tab_button.click(open_root_tab);
@@ -69,6 +73,7 @@ define(['storage'], function(storage){
     this.id = id;
     this.$node = $node_template.clone();
     this.$children = this.$node.children('.children').first();
+    this.$content = null;
     this.parent = null;
 
     if (tab_data === undefined) {
@@ -154,10 +159,34 @@ define(['storage'], function(storage){
       _tabs[_current].unselect_tab();
     _current = this.id;
     this.$node.addClass('selected');
+
+    if(!this.$content){
+      this.$content = $tab_content_template.clone().appendTo($tabs);
+      this.setup_tab_content();
+    }
+    this.$content.show();
+  };
+
+  Tab.prototype.setup_tab_content = function(){
+    var $button_back_to_pin = this.$content.find('.button-back-to-pin');
+    var $button_back = this.$content.find('.button-back');
+    var $button_forward = this.$content.find('.button-forward');
+    var $button_refresh = this.$content.find('.button-refresh');
+    var $button_stop = this.$content.find('.button-stop');
+    var $button_settings = this.$content.find('.button-settings');
+    var $button_pin = this.$content.find('.button-pin');
+
+    var $input_address_bar = this.$content.find('input.address-bar');
+    var $input_tab_name = this.$content.find('input.tab-name');
+
+    $button_settings.click(function(){
+      $tabs.toggleClass('show-settings');
+    });
   };
 
   Tab.prototype.unselect_tab = function(){
     this.$node.removeClass('selected');
+    this.$content.hide();
   };
 
   Tab.prototype.append_to_tab = function(id){

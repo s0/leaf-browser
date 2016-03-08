@@ -156,6 +156,77 @@ body {
       height: 100%;
       flex-grow: 1;
       background-color: rgba(0, 0, 0, 0.05);
+      position: relative;
+
+      .tab {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+
+        .bar-buttons {
+          display: flex;
+          flex-direction: row;
+
+          .button {
+            margin: 5px;
+            height: 30px;
+            background-color: #ddd;
+            border: 1px solid #ccc;
+            padding: 5px 8px;
+            font-size: 12px;
+            line-height: 18px;
+            cursor: pointer;
+
+            &:hover {
+              background-color: #d7d7d7;
+            }
+
+          }
+        }
+
+        .input-text {
+          margin: 5px;
+          flex-grow: 1;
+          display: flex;
+
+          input {
+            flex-grow: 1;
+            border: 1px solid #ccc;
+            outline: none;
+            padding: 0 5px;
+
+            &:focus {
+              background-color: #f7f7f7;
+
+            }
+          }
+        }
+
+        .top, .settings {
+          display: flex;
+          flex-direction: row;
+          padding: 5px;
+          background-color: rgba(0, 0, 0, 0.05);
+          border-bottom: 1px solid #ccc;
+        }
+
+        .settings {
+          display: none;
+        }
+
+        webview {
+          width: 100%;
+          flex-grow: 1;
+        }
+      }
+    }
+
+    .show-settings .tab .settings {
+      display: flex;
     }
   }
 }
