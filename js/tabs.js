@@ -108,7 +108,7 @@ define(['storage'], function(storage){
     storage.set_tab_data(this.id, {
       parent: this.parent
     });
-  }
+  };
 
   Tab.prototype.node_clicked = function(){
     this.select_tab();

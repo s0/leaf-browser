@@ -6,7 +6,7 @@ define([], function(){
   function default_tabs_data(){
     return {
       tabs: {}
-    }
+    };
   }
 
   function load_tabs(callback){
