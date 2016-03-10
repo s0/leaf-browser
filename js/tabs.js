@@ -113,8 +113,14 @@ define(['constants', 'storage'], function(C, storage){
     $arrow.click(this.arrow_clicked.bind(this));
   }
 
-  Tab.prototype.set_tab_text = function(text) {
-     this.$node.children('.tab').find('.button').text(text);
+  Tab.prototype.update_tab_text = function() {
+    var _text;
+    if(this.tab_name && this.tab_name !== '') {
+      _text = this.tab_name;
+    } else {
+      _text = this.title;
+    }
+    this.$node.children('.tab').find('.button').text(_text);
   };
 
   Tab.prototype.update_by_data = function(data) {
@@ -155,10 +161,10 @@ define(['constants', 'storage'], function(C, storage){
     }
 
     if (!this.title) {
-      console.log(data.title);
       this.title = data.title ? data.title : "New Tab";
-      this.set_tab_text(this.title);
     }
+    this.tab_name = data.tab_name;
+    this.update_tab_text();
 
     this.setup = true;
     this.update_display();
@@ -177,7 +183,8 @@ define(['constants', 'storage'], function(C, storage){
       parent: this.parent,
       expanded: this.expanded,
       url: this.url,
-      title: this.title
+      title: this.title,
+      tab_name: this.tab_name
     });
   };
 
@@ -242,7 +249,7 @@ define(['constants', 'storage'], function(C, storage){
         }
         if(this.title !== _title){
           this.title = _title;
-          this.set_tab_text(_title);
+          this.update_tab_text();
           this.store_tab_data();
         }
       }.bind(this));
@@ -276,6 +283,15 @@ define(['constants', 'storage'], function(C, storage){
 
       }
     }.bind(this));
+
+     $input_tab_name.keyup(function(e){
+       if(e.which === C.KEYCODES.ENTER){
+         console.log("new title");
+         this.tab_name = $input_tab_name.val();
+         this.update_tab_text();
+         this.store_tab_data();
+       }
+     }.bind(this));
 
     _webview.addEventListener("loadredirect", function(e){
       if(e.isTopLevel){
