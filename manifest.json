@@ -14,5 +14,10 @@
       "scripts": ["background.js"]
     }
   },
-  "permissions": ["storage", "webview"]
+  "permissions": [
+    "storage",
+    "webview",
+    "http://*/*",
+    "https://*/*"
+    ]
 }

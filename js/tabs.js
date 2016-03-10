@@ -110,11 +110,14 @@ define(['constants', 'storage'], function(C, storage){
     var $button = $tab.find('.button');
     var $arrow = $tab.find('.arrow');
     $button.click(this.button_clicked.bind(this));
-    $button.text('New Tab: ' + id);
     $arrow.click(this.arrow_clicked.bind(this));
   }
 
-  Tab.prototype.update_by_data = function(data){
+  Tab.prototype.set_tab_text = function(text) {
+     this.$node.children('.tab').find('.button').text(text);
+  };
+
+  Tab.prototype.update_by_data = function(data) {
     // Never modify the data in this method
     if(data === undefined){
       // The tab has been deleted
@@ -147,6 +150,16 @@ define(['constants', 'storage'], function(C, storage){
       this.$node.removeClass('expanded');
     }
 
+    if (!this.url) {
+      this.url = data.url;
+    }
+
+    if (!this.title) {
+      console.log(data.title);
+      this.title = data.title ? data.title : "New Tab";
+      this.set_tab_text(this.title);
+    }
+
     this.setup = true;
     this.update_display();
   };
@@ -162,7 +175,9 @@ define(['constants', 'storage'], function(C, storage){
   Tab.prototype.store_tab_data = function(){
     storage.set_tab_data(this.id, {
       parent: this.parent,
-      expanded: this.expanded
+      expanded: this.expanded,
+      url: this.url,
+      title: this.title
     });
   };
 
@@ -202,34 +217,78 @@ define(['constants', 'storage'], function(C, storage){
 
     var _webview = this.$content.find('webview').get(0);
 
+    if (this.url){
+      _webview.src = this.url;
+    } else {
+      this.focus_address_bar();
+    }
+
+    // Functions
+
+    var url_changed = function(url) {
+      $input_address_bar.val(url_to_address_bar_text(url));
+      // Store current url
+      this.url = url;
+      this.store_tab_data();
+    }.bind(this);
+
+    var update_title = function(){
+      _webview.executeScript({ code: "document.title" }, function(arr){
+        var _title;
+        if (!arr || arr.length === 0 || !(arr[0])) {
+          _title = "Untitled";
+        } else {
+          _title = arr[0];
+        }
+        if(this.title !== _title){
+          this.title = _title;
+          this.set_tab_text(_title);
+          this.store_tab_data();
+        }
+      }.bind(this));
+    }.bind(this);
+
+    // Listeners
+
     $button_settings.click(function(){
       $tabs.toggleClass('show-settings');
     });
 
-    this.focus_address_bar();
+    $button_back.click(function(){
+      _webview.back();
+    });
+
+    $button_forward.click(function(){
+      _webview.forward();
+    });
+
+    $button_refresh.click(function(){
+      _webview.reload();
+    });
+
+    $button_stop.click(function(){
+      _webview.stop();
+    });
 
     $input_address_bar.keyup(function(e){
       if(e.which === C.KEYCODES.ENTER){
-
-        var _url = address_bar_text_to_url($input_address_bar.val());
-        $input_address_bar.val(url_to_address_bar_text(_url));
-        _webview.src = _url
+        _webview.src = address_bar_text_to_url($input_address_bar.val());
 
       }
-    });
+    }.bind(this));
 
     _webview.addEventListener("loadredirect", function(e){
       if(e.isTopLevel){
-        $input_address_bar.val(url_to_address_bar_text(e.newUrl));
+        url_changed(e.newUrl);
       }
     });
     _webview.addEventListener("loadstart", function(e){
       if(e.isTopLevel){
-        $input_address_bar.val(url_to_address_bar_text(e.url));
+        url_changed(e.url);
       }
     });
     _webview.addEventListener("loadstop", function(){
-      console.log("load stop");
+      update_title();
     });
   };
 
