@@ -249,8 +249,10 @@ define(['constants', 'storage'], function(C, storage){
     var url_changed = function(url) {
       $input_address_bar.val(url_to_address_bar_text(url));
       // Store current url
-      this.url = url;
-      this.store_tab_data();
+      if (this.url !== url) {
+        this.url = url;
+        this.store_tab_data();
+      }
     }.bind(this);
 
     var update_title = function(){
@@ -317,6 +319,7 @@ define(['constants', 'storage'], function(C, storage){
       }
     });
     _webview.addEventListener("loadstop", function(){
+      url_changed(_webview.src);
       update_title();
     });
     _webview.addEventListener('newwindow', function(e) {
