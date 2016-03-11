@@ -64,6 +64,12 @@ define(['constants', 'storage'], function(C, storage){
     });
   }
 
+  function close_current_tab(){
+    if (_current !== null){
+      _tabs[_current].close_tab();
+    }
+  }
+
   function focus_address_bar(){
     if(_current !== null && (_current in _tabs))
       _tabs[_current].focus_address_bar();
@@ -117,6 +123,10 @@ define(['constants', 'storage'], function(C, storage){
     $arrow.click(this.arrow_clicked.bind(this));
   }
 
+  Tab.prototype.has_children = function() {
+    return this.$children.children().length !== 0;
+  };
+
   Tab.prototype.update_tab_text = function() {
     var _text;
     if(this.tab_name && this.tab_name !== '') {
@@ -135,6 +145,10 @@ define(['constants', 'storage'], function(C, storage){
       this.$node.remove();
       if (this.$content) {
         this.$content.remove();
+      }
+      // Update Parent if Neccesary
+      if (this.parent !== null) {
+        _tabs[this.parent].update_display();
       }
       return;
     }
@@ -340,6 +354,26 @@ define(['constants', 'storage'], function(C, storage){
     this.$content.hide();
   };
 
+  Tab.prototype.close_tab = function(){
+    // If the tab has children, don't close
+    // TODO: confirm
+    if (this.has_children()) {
+      return;
+    }
+    // Switch to a new tab if possible (parent)
+    if (_current === this.id) {
+      if (this.parent !== null){
+        var _parent = _tabs[this.parent];
+        _parent.select_tab();
+      } else {
+        this.unselect_tab();
+        _current = null;
+      }
+    }
+    // Delete Tab Data
+    storage.set_tab_data(this.id, undefined);
+  };
+
   Tab.prototype.append_to_tab = function(id){
     if (id !== null){
       this.parent = id;
@@ -362,7 +396,8 @@ define(['constants', 'storage'], function(C, storage){
   return {
     init: init,
     open_new_tab: open_new_tab,
-    focus_address_bar: focus_address_bar
+    focus_address_bar: focus_address_bar,
+    close_current_tab: close_current_tab
   };
 
 });

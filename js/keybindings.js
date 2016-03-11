@@ -17,7 +17,7 @@ define(['constants', 'storage','tabs'], function(C, storage, tabs){
           break;
         case C.KEYCODES.W:
           if (e.ctrlKey) {
-            console.log("close window key");
+            tabs.close_current_tab();
             e.preventDefault();
           }
           break;
