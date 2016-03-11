@@ -4,14 +4,16 @@ define(['constants', 'storage'], function(C, storage){
   var _next_tab_id = 0;
   var $node_template;
   var $tab_content_template;
+  var $tab_webview_template;
   var $tab_tree;
   var $tabs;
-  var _current;
+  var _current = null;
   var _tabs = {};
 
   function init(templates){
     $node_template = templates['tab-tree-node'];
     $tab_content_template = templates['tab-content'];
+    $tab_webview_template = templates['tab-webview'];
     $tab_tree = $('.tab-tree');
     $tabs = $('.app-right .tabs');
 
@@ -51,11 +53,14 @@ define(['constants', 'storage'], function(C, storage){
     });
   }
 
-  function open_new_tab(){
+  function open_new_tab(callback){
     get_free_tab_id(function(id){
       var _tab = new Tab(id);
       _tab.append_to_tab(_current);
       _tab.select_tab();
+      if (callback) {
+        callback(_tab);
+      }
     });
   }
 
@@ -129,6 +134,7 @@ define(['constants', 'storage'], function(C, storage){
       // The tab has been deleted
       delete _tabs[this.id];
       this.$node.remove();
+      this.$content.remove();
       return;
     }
 
@@ -210,7 +216,7 @@ define(['constants', 'storage'], function(C, storage){
     this.$content.show();
   };
 
-  Tab.prototype.setup_tab_content = function(){
+  Tab.prototype.setup_tab_content = function($existing_webview){
     var $button_back_to_pin = this.$content.find('.button-back-to-pin');
     var $button_back = this.$content.find('.button-back');
     var $button_forward = this.$content.find('.button-forward');
@@ -222,7 +228,15 @@ define(['constants', 'storage'], function(C, storage){
     var $input_address_bar = this.$content.find('input.address-bar');
     var $input_tab_name = this.$content.find('input.tab-name');
 
-    var _webview = this.$content.find('webview').get(0);
+    console.log($webview);
+    var $webview;
+    if ($existing_webview){
+      $webview = $existing_webview;
+    } else {
+      $webview = $tab_webview_template.clone();
+    }
+    $webview.appendTo(this.$content.find('.webview-wrapper'));
+    var _webview = $webview.get(0);
 
     if (this.url){
       _webview.src = this.url;
@@ -306,6 +320,13 @@ define(['constants', 'storage'], function(C, storage){
     _webview.addEventListener("loadstop", function(){
       update_title();
     });
+    _webview.addEventListener('newwindow', function(e) {
+      var $webview = $tab_webview_template.clone();
+      e.window.attach($webview.get(0));
+      open_new_tab(function(tab){
+        tab.setup_tab_content($webview);
+      });
+    });
   };
 
   Tab.prototype.focus_address_bar = function(){
@@ -318,7 +339,7 @@ define(['constants', 'storage'], function(C, storage){
   };
 
   Tab.prototype.append_to_tab = function(id){
-    if (id){
+    if (id !== null){
       this.parent = id;
       this.store_tab_data();
       var _parent_tab = _tabs[this.parent];
