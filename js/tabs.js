@@ -79,7 +79,6 @@ define(['constants', 'storage'], function(C, storage){
   }
 
   function address_bar_text_to_url(text){
-    console.log(C.REGEXES.DOMAIN.exec(text));
     if (C.REGEXES.DOMAIN.exec(text)) {
       return "https://" + text;
     }
@@ -134,13 +133,15 @@ define(['constants', 'storage'], function(C, storage){
       // The tab has been deleted
       delete _tabs[this.id];
       this.$node.remove();
-      this.$content.remove();
+      if (this.$content) {
+        this.$content.remove();
+      }
       return;
     }
 
     // Parent
     if (this.parent !== data.parent || !this.setup) {
-      if (data.parent){
+      if (data.parent !== null){
         var _parent_tab = _tabs[data.parent];
         if (_parent_tab){
           this.$node.appendTo(_parent_tab.$children);
@@ -228,7 +229,6 @@ define(['constants', 'storage'], function(C, storage){
     var $input_address_bar = this.$content.find('input.address-bar');
     var $input_tab_name = this.$content.find('input.tab-name');
 
-    console.log($webview);
     var $webview;
     if ($existing_webview){
       $webview = $existing_webview;
@@ -300,7 +300,6 @@ define(['constants', 'storage'], function(C, storage){
 
      $input_tab_name.keyup(function(e){
        if(e.which === C.KEYCODES.ENTER){
-         console.log("new title");
          this.tab_name = $input_tab_name.val();
          this.update_tab_text();
          this.store_tab_data();
