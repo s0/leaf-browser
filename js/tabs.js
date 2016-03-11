@@ -42,7 +42,7 @@ define(['constants', 'storage'], function(C, storage){
       if(!(id in tabs.tabs))
         tab.update_by_data(undefined);
     });
-    if(_current && !(_current in _tabs))
+    if(_current !== null && !(_current in _tabs))
       _current = null;
   }
 
@@ -65,7 +65,7 @@ define(['constants', 'storage'], function(C, storage){
   }
 
   function focus_address_bar(){
-    if(_current && (_current in _tabs))
+    if(_current !== null && (_current in _tabs))
       _tabs[_current].focus_address_bar();
   }
 
@@ -204,7 +204,7 @@ define(['constants', 'storage'], function(C, storage){
   };
 
   Tab.prototype.select_tab = function(){
-    if(_current && _current in _tabs)
+    if(_current !== null && _current in _tabs)
       _tabs[_current].unselect_tab();
     _current = this.id;
     this.$node.addClass('selected');
