@@ -295,7 +295,12 @@ body {
           }
         }
 
-        .top, .settings .inner {
+        .label {
+          margin: 5px;
+          line-height: 30px;
+        }
+
+        .top, .settings .inner, .find .inner {
           display: flex;
           flex-direction: row;
           padding: 5px;
@@ -303,9 +308,10 @@ body {
           border-bottom: 1px solid #ccc;
         }
 
-        .settings {
+        .settings, .find {
           height: 0;
           transition: height 0.3s;
+          overflow: hidden;
         }
 
         .webview-wrapper {
@@ -316,6 +322,12 @@ body {
             position: absolute;
             width: 100%;
             height: 100%;
+          }
+        }
+
+        &.find-enabled {
+          .find {
+            height: 51px;
           }
         }
       }

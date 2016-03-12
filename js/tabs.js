@@ -79,10 +79,9 @@ define(['constants', 'storage'], function(C, storage){
     });
   }
 
-  function unselect_current_tab(){
+  function escape_current_tab(){
     with_current(function(tab){
-      tab.unselect_tab();
-      _current = null;
+      tab.escape_tab();
     });
   }
 
@@ -246,7 +245,9 @@ define(['constants', 'storage'], function(C, storage){
   };
 
   Tab.prototype.select_tab = function(){
-    unselect_current_tab();
+    with_current(function(tab){
+      tab.unselect_tab();
+    });
     _current = this.id;
     this.$node.addClass('selected');
 
@@ -255,6 +256,10 @@ define(['constants', 'storage'], function(C, storage){
       this.setup_tab_content();
     }
     this.$content.show();
+  };
+
+  Tab.prototype.get_webview = function(){
+    return this.$content.find('webview').get(0);
   };
 
   Tab.prototype.setup_tab_content = function($existing_webview){
@@ -268,6 +273,12 @@ define(['constants', 'storage'], function(C, storage){
 
     var $input_address_bar = this.$content.find('input.address-bar');
     var $input_tab_name = this.$content.find('input.tab-name');
+
+    var $find_input = this.$content.find('.find-text');
+    var $find_next = this.$content.find('.button-find-next');
+    var $find_prev = this.$content.find('.button-find-prev');
+    var $find_info = this.$content.find('.find-info');
+    var _last_find = null;
 
     var $webview;
     if ($existing_webview){
@@ -340,30 +351,60 @@ define(['constants', 'storage'], function(C, storage){
       }
     }.bind(this));
 
-     $input_tab_name.keyup(function(e){
-       if(e.which === C.KEYCODES.ENTER){
-         this.tab_name = $input_tab_name.val();
-         this.update_tab_text();
-         this.store_tab_data();
-       }
-     }.bind(this));
+    $input_tab_name.keyup(function(e){
+      if(e.which === C.KEYCODES.ENTER){
+        this.tab_name = $input_tab_name.val();
+        this.update_tab_text();
+        this.store_tab_data();
+      }
+    }.bind(this));
+
+    $find_input.keyup(function(e) {
+      var _find = $find_input.val();
+      if (_find !== _last_find || e.which === C.KEYCODES.ENTER) {
+        _last_find = _find;
+        _webview.find(_find);
+      }
+    }.bind(this));
+
+    $find_next.click(function() {
+      _webview.find($find_input.val());
+    });
+
+    $find_prev.click(function() {
+      _webview.find($find_input.val(), {
+        backward: true
+      });
+    });
+
+    _webview.addEventListener("findupdate", function(e){
+      if (e.searchText === '') {
+        $find_info.text('');
+      } else {
+        $find_info.text(e.activeMatchOrdinal + ' of ' + e.numberOfMatches);
+      }
+      console.log("findupdate", e);
+    });
 
     _webview.addEventListener("loadredirect", function(e){
       if(e.isTopLevel){
         url_changed(e.newUrl);
       }
     });
+
     _webview.addEventListener("loadstart", function(e){
       if(e.isTopLevel){
         url_changed(e.url);
       }
       this.$node.addClass("loading").removeClass("ready");
     }.bind(this));
+
     _webview.addEventListener("loadstop", function(){
       url_changed(_webview.src);
       update_title();
       this.$node.removeClass("loading").addClass("ready");
     }.bind(this));
+
     _webview.addEventListener('newwindow', function(e) {
       var $webview = $tab_webview_template.clone();
       e.window.attach($webview.get(0));
@@ -380,10 +421,24 @@ define(['constants', 'storage'], function(C, storage){
   Tab.prototype.unselect_tab = function(){
     this.$node.removeClass('selected');
     this.$content.hide();
+    if (this.id === _current) {
+      _current = null;
+    }
+  };
+
+  Tab.prototype.escape_tab = function(){
+    if (this.$content.hasClass('find-enabled')){
+      this.$content.removeClass('find-enabled');
+      this.get_webview().stopFinding("clear");
+    } else {
+      this.unselect_tab();
+    }
   };
 
   Tab.prototype.start_find = function(){
-    console.log("start find");
+    this.$content.addClass('find-enabled');
+    var $find_input = this.$content.find('input.find-text').focus().select();
+    this.get_webview().find($find_input.val());
   };
 
   Tab.prototype.close_tab = function(){
@@ -430,7 +485,7 @@ define(['constants', 'storage'], function(C, storage){
     open_new_tab: open_new_tab,
     focus_address_bar: focus_address_bar,
     close_current_tab: close_current_tab,
-    unselect_current_tab: unselect_current_tab,
+    escape_current_tab: escape_current_tab,
     start_find: start_find
   };
 
