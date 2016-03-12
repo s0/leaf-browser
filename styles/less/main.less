@@ -209,6 +209,44 @@ body {
       background-color: rgba(0, 0, 0, 0.05);
       position: relative;
 
+      #welcome {
+        display: flex;
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        flex-flow: column;
+        justify-content: center;
+
+        .hints {
+
+          .hint {
+            height: 0;
+            text-align: center;
+            font-size: 30px;
+            color: #666;
+            opacity: 0;
+            transition: opacity 0.5s;
+
+            &.selected {
+              height: auto;
+
+              &.visible {
+                opacity: 1;
+              }
+            }
+
+            code {
+              display: inline-block;
+              border: 1px solid #999;
+              border-radius: 6px;
+              padding: 5px;
+            }
+          }
+        }
+      }
+
       .tab {
         position: absolute;
         top: 0;
