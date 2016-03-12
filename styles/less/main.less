@@ -142,8 +142,17 @@ body {
 
                   .icon {
                     display: none;
-                    color: #666;
+                    color: #999;
                     margin-left: 5px;
+
+                    &.close {
+                      display: block;
+                      cursor: pointer;
+
+                      &:hover {
+                        color: #444;
+                      }
+                    }
                   }
 
                   .loading span {

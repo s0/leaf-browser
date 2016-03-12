@@ -143,6 +143,11 @@ define(['constants', 'storage'], function(C, storage){
     var $arrow = $tab.find('.arrow');
     $button.click(this.button_clicked.bind(this));
     $arrow.click(this.arrow_clicked.bind(this));
+
+    $button.find('.icon.close').click(function(e){
+      this.close_tab();
+      e.stopPropagation();
+    }.bind(this));
   }
 
   Tab.prototype.has_children = function() {
