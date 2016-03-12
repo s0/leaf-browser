@@ -342,12 +342,12 @@ define(['constants', 'storage'], function(C, storage){
       if(e.isTopLevel){
         url_changed(e.url);
       }
-      this.$node.addClass("loading");
+      this.$node.addClass("loading").removeClass("ready");
     }.bind(this));
     _webview.addEventListener("loadstop", function(){
       url_changed(_webview.src);
       update_title();
-      this.$node.removeClass("loading");
+      this.$node.removeClass("loading").addClass("ready");
     }.bind(this));
     _webview.addEventListener('newwindow', function(e) {
       var $webview = $tab_webview_template.clone();
