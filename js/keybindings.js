@@ -13,6 +13,11 @@ define(['constants', 'storage','tabs'], function(C, storage, tabs){
             tabs.open_new_tab();
           }
           break;
+        case C.KEYCODES.F:
+          if (e.ctrlKey) {
+            tabs.start_find();
+          }
+          break;
         case C.KEYCODES.Q:
           if (e.ctrlKey) {
             storage.clear();

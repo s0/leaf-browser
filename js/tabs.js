@@ -64,22 +64,38 @@ define(['constants', 'storage'], function(C, storage){
     });
   }
 
-  function close_current_tab(){
-    if (_current !== null){
-      _tabs[_current].close_tab();
+  function with_current(callback){
+    if (_current !== null) {
+      var _tab = _tabs[_current];
+      if (_tab) {
+        callback(_tab);
+      }
     }
   }
 
+  function close_current_tab(){
+    with_current(function(tab){
+      tab.close_tab();
+    });
+  }
+
   function unselect_current_tab(){
-      if (_current !== null){
-        _tabs[_current].unselect_tab();
-        _current = null;
-      }
+    with_current(function(tab){
+      tab.unselect_tab();
+      _current = null;
+    });
   }
 
   function focus_address_bar(){
-    if(_current !== null && (_current in _tabs))
-      _tabs[_current].focus_address_bar();
+    with_current(function(tab){
+      tab.focus_address_bar();
+    });
+  }
+
+  function start_find(){
+    with_current(function(tab){
+      tab.start_find();
+    });
   }
 
   function get_free_tab_id (callback){
@@ -230,8 +246,7 @@ define(['constants', 'storage'], function(C, storage){
   };
 
   Tab.prototype.select_tab = function(){
-    if(_current !== null && _current in _tabs)
-      _tabs[_current].unselect_tab();
+    unselect_current_tab();
     _current = this.id;
     this.$node.addClass('selected');
 
@@ -367,6 +382,10 @@ define(['constants', 'storage'], function(C, storage){
     this.$content.hide();
   };
 
+  Tab.prototype.start_find = function(){
+    console.log("start find");
+  };
+
   Tab.prototype.close_tab = function(){
     // If the tab has children, don't close
     // TODO: confirm
@@ -411,7 +430,8 @@ define(['constants', 'storage'], function(C, storage){
     open_new_tab: open_new_tab,
     focus_address_bar: focus_address_bar,
     close_current_tab: close_current_tab,
-    unselect_current_tab: unselect_current_tab
+    unselect_current_tab: unselect_current_tab,
+    start_find: start_find
   };
 
 });

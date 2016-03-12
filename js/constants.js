@@ -4,6 +4,7 @@ define([], function(){
   var KEYCODES = {
     ENTER: 13,
     ESC: 27,
+    F: 70,
     L: 76,
     Q: 81,
     T: 84,
