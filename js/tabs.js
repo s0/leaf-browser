@@ -124,7 +124,7 @@ define(['constants', 'storage'], function(C, storage){
   }
 
   Tab.prototype.has_children = function() {
-    return this.$children.children().length !== 0;
+    return this.$children.children().children('.tab').not('.hide').length !== 0;
   };
 
   Tab.prototype.update_tab_text = function() {
@@ -142,7 +142,10 @@ define(['constants', 'storage'], function(C, storage){
     if(data === undefined){
       // The tab has been deleted
       delete _tabs[this.id];
-      this.$node.remove();
+      this.$node.children('.tab').addClass('hide');
+      setTimeout(function (){
+        this.$node.remove();
+      }.bind(this), 500);
       if (this.$content) {
         this.$content.remove();
       }
@@ -192,10 +195,10 @@ define(['constants', 'storage'], function(C, storage){
   };
 
   Tab.prototype.update_display = function(){
-    if (this.$children.children().length === 0) {
-      this.$node.removeClass('has-children');
-    } else {
+    if (this.has_children()) {
       this.$node.addClass('has-children');
+    } else {
+      this.$node.removeClass('has-children');
     }
   };
 

@@ -85,20 +85,35 @@ body {
 
             .node {
 
+              @keyframes show-tab {
+                  from {height: 0; opacity: 0;}
+                  to {height: 30px; opacity: 1;}
+              }
+
+              @keyframes hide-tab {
+                  from {height: 30px; opacity: 1;}
+                  to {height: 0; opacity: 0;}
+              }
+
               .tab {
                 margin-top: -1px;
                 position: relative;
+                animation: show-tab 500ms 1 ease;
+
+                &.hide {
+                  animation: hide-tab 500ms 1 ease;
+                  opacity: 0;
+                  height: 0;
+                }
 
                 .arrow {
-                  display: none;
+                  display: inline-block;
                   position: absolute;
                   height: 30px;
                   padding: 8px 0 0 7px;
-                  cursor: pointer;
-
-                  &:hover {
-                    opacity: 0.6;
-                  }
+                  cursor: normal;
+                  opacity: 0;
+                  transition: opacity 0.3s;
 
                   span {
                     color: #666;
@@ -119,7 +134,12 @@ body {
               }
 
               &.has-children > .tab .arrow {
-                display: inline-block;
+                cursor: pointer;
+                opacity: 1;
+
+                &:hover {
+                  opacity: 0.6;
+                }
               }
 
               > .children {
