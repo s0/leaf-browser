@@ -162,15 +162,16 @@ define(['constants', 'storage'], function(C, storage){
         var _parent_tab = _tabs[data.parent];
         if (_parent_tab){
           this.$node.appendTo(_parent_tab.$children);
+          this.parent = data.parent;
           _parent_tab.update_display();
         } else {
           console.error("Parent does not exist");
         }
       } else {
         this.$node.appendTo($tab_tree);
+        this.parent = null;
       }
     }
-    this.parent = data.parent;
 
     if (data.expanded) {
       this.expanded = true;
