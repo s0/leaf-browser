@@ -70,6 +70,13 @@ define(['constants', 'storage'], function(C, storage){
     }
   }
 
+  function unselect_current_tab(){
+      if (_current !== null){
+        _tabs[_current].unselect_tab();
+        _current = null;
+      }
+  }
+
   function focus_address_bar(){
     if(_current !== null && (_current in _tabs))
       _tabs[_current].focus_address_bar();
@@ -401,7 +408,8 @@ define(['constants', 'storage'], function(C, storage){
     init: init,
     open_new_tab: open_new_tab,
     focus_address_bar: focus_address_bar,
-    close_current_tab: close_current_tab
+    close_current_tab: close_current_tab,
+    unselect_current_tab: unselect_current_tab
   };
 
 });

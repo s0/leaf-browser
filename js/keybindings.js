@@ -5,6 +5,9 @@ define(['constants', 'storage','tabs'], function(C, storage, tabs){
 
     $(window).keydown(function(e){
       switch(e.which){
+        case C.KEYCODES.ESC:
+          tabs.unselect_current_tab();
+          break;
         case C.KEYCODES.T:
           if (e.ctrlKey) {
             tabs.open_new_tab();
