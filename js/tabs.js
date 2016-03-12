@@ -141,7 +141,7 @@ define(['constants', 'storage'], function(C, storage){
     } else {
       _text = this.title;
     }
-    this.$node.children('.tab').find('.button').text(_text);
+    this.$node.children('.tab').find('.button .label').text(_text);
   };
 
   Tab.prototype.update_by_data = function(data) {
@@ -342,11 +342,13 @@ define(['constants', 'storage'], function(C, storage){
       if(e.isTopLevel){
         url_changed(e.url);
       }
-    });
+      this.$node.addClass("loading");
+    }.bind(this));
     _webview.addEventListener("loadstop", function(){
       url_changed(_webview.src);
       update_title();
-    });
+      this.$node.removeClass("loading");
+    }.bind(this));
     _webview.addEventListener('newwindow', function(e) {
       var $webview = $tab_webview_template.clone();
       e.window.attach($webview.get(0));

@@ -10,6 +10,11 @@ body {
   background-color: #fff;
 }
 
+@keyframes spin {
+    from {transform:rotate(0deg);}
+    to {transform:rotate(360deg);}
+}
+
 #templates {
   display: none;
 }
@@ -125,12 +130,34 @@ body {
 
                 .button {
                   .app-left-button();
+                  display: flex;
                   margin-left: 25px;
+
+                  .label {
+                    flex-grow: 1;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                    white-space: nowrap;
+                  }
+
+                  .icon {
+                    display: none;
+                    color: #666;
+                    margin-left: 5px;
+                  }
+
+                  .loading span {
+                    animation: spin 1500ms infinite linear;
+                  }
                 }
               }
 
               &.selected > .tab .button {
                 background-color: #d6d6d6;
+              }
+
+              &.loading > .tab .button .icon.loading {
+                display: block;
               }
 
               &.has-children > .tab .arrow {
