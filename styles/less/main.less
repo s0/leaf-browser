@@ -226,7 +226,7 @@ body {
           }
         }
 
-        .top, .settings {
+        .top, .settings .inner {
           display: flex;
           flex-direction: row;
           padding: 5px;
@@ -235,7 +235,8 @@ body {
         }
 
         .settings {
-          display: none;
+          height: 0;
+          transition: height 0.3s;
         }
 
         .webview-wrapper {
@@ -252,7 +253,7 @@ body {
     }
 
     .show-settings .tab .settings {
-      display: flex;
+      height: 51px;
     }
   }
 }
