@@ -262,23 +262,23 @@ define(['constants', 'storage'], function(C, storage){
     this.tab_color = data.tab_color;
     this.update_tab_color();
 
+    this.pinned = !!data.pinned;
+
     this.setup = true;
     this.update_display();
     this.update_settings_display();
   };
 
   Tab.prototype.update_display = function(){
-    if (this.has_children()) {
-      this.$node.addClass('has-children');
-    } else {
-      this.$node.removeClass('has-children');
-    }
+    this.$node.toggleClass('has-children', this.has_children());
+    this.$node.toggleClass('pinned', this.pinned);
   };
 
   Tab.prototype.update_settings_display = function(){
     if (this.$content){
       this.$content.find('input.tab-name').val(this.tab_name);
       this.$content.find('input.tab-color').val(this.tab_color);
+      this.$content.find('.button-pin').toggleClass('pinned', this.pinned);
     }
   };
 
@@ -289,7 +289,8 @@ define(['constants', 'storage'], function(C, storage){
       url: this.url,
       title: this.title,
       tab_name: this.tab_name,
-      tab_color: this.tab_color
+      tab_color: this.tab_color,
+      pinned: this.pinned
     });
   };
 
@@ -327,7 +328,7 @@ define(['constants', 'storage'], function(C, storage){
     var $button_refresh = this.$content.find('.button-refresh');
     var $button_stop = this.$content.find('.button-stop');
     var $button_settings = this.$content.find('.button-settings');
-    var $button_pin = this.$content.find('.button-pin');
+    var $button_pin = this.$content.find('.button-pin').toggleClass('pinned', this.pinned);
 
     var $input_address_bar = this.$content.find('input.address-bar');
     var $input_tab_name = this.$content.find('input.tab-name').val(this.tab_name);
@@ -415,6 +416,15 @@ define(['constants', 'storage'], function(C, storage){
     $button_stop.click(function(){
       _webview.stop();
     });
+
+    $button_pin.click(function() {
+      if (this.pinned) {
+        this.pinned = false;
+      } else {
+        this.pinned = true;
+      }
+      this.store_tab_data();
+    }.bind(this));
 
     $input_address_bar.keyup(function(e){
       if(e.which === C.KEYCODES.ENTER){
@@ -524,6 +534,11 @@ define(['constants', 'storage'], function(C, storage){
   };
 
   Tab.prototype.close_tab = function(){
+    // Don't close if pinned
+    // TODO: show message
+    if (this.pinned) {
+      return;
+    }
     // If the tab has children, don't close
     // TODO: confirm
     if (this.has_children()) {

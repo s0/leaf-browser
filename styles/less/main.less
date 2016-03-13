@@ -189,6 +189,17 @@ body {
                 display: block;
               }
 
+              &.pinned > .tab .button {
+                .icon.close {
+                  display: none;
+                }
+
+                .icon.pinned {
+                  display: block;
+                  transform: rotate(-45deg);
+                }
+              }
+
               &.has-children > .tab .arrow {
                 cursor: pointer;
                 opacity: 1;
@@ -307,6 +318,17 @@ body {
 
             &.button-refresh, &.button-stop {
               display: none;
+            }
+
+            &.button-pin {
+              span {
+                transition: transform 0.3s;
+                transform: rotate(0);
+              }
+
+              &.pinned span {
+                transform: rotate(-45deg);
+              }
             }
 
           }
