@@ -25,6 +25,9 @@ and uses webview tags. It's in its **very early** stages at the moment.
 
 ## Installation
 
+At some point (when I feel like the app is polished enough), I will distribute
+it on the Chrome Web Store, but until then you can install it like so:
+
 1. Make sure you have Google Chrome or Chromium installed.
 2. Install `npm` and `grunt`.
 2. Checkout this repository.
