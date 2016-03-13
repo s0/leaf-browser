@@ -17,6 +17,9 @@ and uses webview tags. It's in its **very early** stages at the moment.
 
 ## Roadmap
 
+* Improve Branding.
+* Collapsible Tab Area.
+* Settings Screen.
 * Ability to move tabs around.
 * Touch-Screen friendly interactivity for managing tabs.
 * Allow creation of different users, and switching users for particular tabs.
