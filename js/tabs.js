@@ -267,7 +267,7 @@ define(['constants', 'storage'], function(C, storage){
 
     this.setup = true;
     this.update_display();
-    this.update_settings_display();
+    this.update_content_display();
   };
 
   Tab.prototype.update_display = function(){
@@ -275,11 +275,14 @@ define(['constants', 'storage'], function(C, storage){
     this.$node.toggleClass('pinned', this.pinned);
   };
 
-  Tab.prototype.update_settings_display = function(){
+  Tab.prototype.update_content_display = function(){
     if (this.$content){
+      var _webview = this.get_webview();
       this.$content.find('input.tab-name').val(this.tab_name);
       this.$content.find('input.tab-color').val(this.tab_color);
       this.$content.find('.button-pin').toggleClass('pinned', this.pinned);
+      this.$content.find('.button-back-to-pin').toggleClass('disabled',
+        !this.pinned || !this.url || (_webview && this.url === _webview.src));
     }
   };
 
@@ -329,17 +332,19 @@ define(['constants', 'storage'], function(C, storage){
     var $button_refresh = this.$content.find('.button-refresh');
     var $button_stop = this.$content.find('.button-stop');
     var $button_settings = this.$content.find('.button-settings');
-    var $button_pin = this.$content.find('.button-pin').toggleClass('pinned', this.pinned);
+    var $button_pin = this.$content.find('.button-pin');
 
     var $input_address_bar = this.$content.find('input.address-bar');
-    var $input_tab_name = this.$content.find('input.tab-name').val(this.tab_name);
-    var $input_tab_color = this.$content.find('input.tab-color').val(this.tab_color);
+    var $input_tab_name = this.$content.find('input.tab-name');
+    var $input_tab_color = this.$content.find('input.tab-color');
 
     var $find_input = this.$content.find('.find-text');
     var $find_next = this.$content.find('.button-find-next');
     var $find_prev = this.$content.find('.button-find-prev');
     var $find_info = this.$content.find('.find-info');
     var _last_find = null;
+
+    this.update_content_display();
 
     var $webview;
     if ($existing_webview){
@@ -361,7 +366,7 @@ define(['constants', 'storage'], function(C, storage){
     var url_changed = function(url) {
       $input_address_bar.val(url_to_address_bar_text(url));
       // Store current url
-      if (this.url !== url) {
+      if (this.url !== url && !this.pinned) {
         this.url = url;
         this.store_tab_data();
       }
@@ -394,6 +399,7 @@ define(['constants', 'storage'], function(C, storage){
       } else {
         $button_forward.addClass('disabled');
       }
+      this.update_content_display();
     }.bind(this);
 
     // Listeners
@@ -401,6 +407,10 @@ define(['constants', 'storage'], function(C, storage){
     $button_settings.click(function(){
       $tabs.toggleClass('show-settings');
     });
+
+    $button_back_to_pin.click(function(){
+      _webview.src = this.url;
+    }.bind(this));
 
     $button_back.click(function(){
       _webview.back();
