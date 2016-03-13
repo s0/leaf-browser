@@ -85,6 +85,12 @@ define(['constants', 'storage'], function(C, storage){
     });
   }
 
+  function refresh_current_tab(){
+    with_current(function(tab){
+      tab.get_webview().reload();
+    });
+  }
+
   function focus_address_bar(){
     with_current(function(tab){
       tab.focus_address_bar();
@@ -491,6 +497,7 @@ define(['constants', 'storage'], function(C, storage){
     focus_address_bar: focus_address_bar,
     close_current_tab: close_current_tab,
     escape_current_tab: escape_current_tab,
+    refresh_current_tab: refresh_current_tab,
     start_find: start_find
   };
 

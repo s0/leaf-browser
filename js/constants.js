@@ -7,6 +7,7 @@ define([], function(){
     F: 70,
     L: 76,
     Q: 81,
+    R: 82,
     T: 84,
     W: 87
   };
