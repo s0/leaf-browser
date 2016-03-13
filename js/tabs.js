@@ -516,6 +516,10 @@ define(['constants', 'storage'], function(C, storage){
       });
     });
 
+    _webview.addEventListener('close', function() {
+      this.close_tab();
+    }.bind(this));
+
     // Intercept requests for pinned tabs
     _webview.request.onBeforeRequest.addListener(function(details) {
       if (this.pinned && details.type === 'main_frame' &&
