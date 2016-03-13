@@ -50,6 +50,7 @@ define(['constants', 'storage'], function(C, storage){
     get_free_tab_id(function(id){
       var _tab = new Tab(id);
       _tab.append_to_root();
+      _tab.select_tab();
     });
   }
 
