@@ -12,6 +12,7 @@ and uses webview tags. It's in its **very early** stages at the moment.
 * Ability to rename tabs.
 * Not all tabs need to be loaded at once (they are loaded when you want them to
   be, and marked with a tick).
+* Ability to clour-code tabs.
 
 ## Roadmap
 
@@ -19,7 +20,6 @@ and uses webview tags. It's in its **very early** stages at the moment.
 * Allow creation of different users, and switching users for particular tabs.
   (This could for example allow you to log in to certain sites with different
   users at the same time).
-* Ability to clour-code tabs.
 * Syncing tabs accross computers.
 * Plugin architecture.
 
