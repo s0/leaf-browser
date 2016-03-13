@@ -264,6 +264,7 @@ define(['constants', 'storage'], function(C, storage){
 
     this.setup = true;
     this.update_display();
+    this.update_settings_display();
   };
 
   Tab.prototype.update_display = function(){
@@ -271,6 +272,13 @@ define(['constants', 'storage'], function(C, storage){
       this.$node.addClass('has-children');
     } else {
       this.$node.removeClass('has-children');
+    }
+  };
+
+  Tab.prototype.update_settings_display = function(){
+    if (this.$content){
+      this.$content.find('input.tab-name').val(this.tab_name);
+      this.$content.find('input.tab-color').val(this.tab_color);
     }
   };
 
@@ -322,8 +330,8 @@ define(['constants', 'storage'], function(C, storage){
     var $button_pin = this.$content.find('.button-pin');
 
     var $input_address_bar = this.$content.find('input.address-bar');
-    var $input_tab_name = this.$content.find('input.tab-name');
-    var $input_tab_color = this.$content.find('input.tab-color');
+    var $input_tab_name = this.$content.find('input.tab-name').val(this.tab_name);
+    var $input_tab_color = this.$content.find('input.tab-color').val(this.tab_color);
 
     var $find_input = this.$content.find('.find-text');
     var $find_next = this.$content.find('.button-find-next');
