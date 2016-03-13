@@ -15,6 +15,10 @@ and uses webview tags. It's in its **very early** stages at the moment.
   be, and marked with a tick).
 * Ability to clour-code tabs.
 
+## Immidiate TODOs
+
+* Allow closing of tabs with subtabs (pick between close / keep children)
+
 ## Roadmap
 
 * Improve Branding.
