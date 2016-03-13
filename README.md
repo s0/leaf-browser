@@ -1,7 +1,9 @@
 # Hex Browser
 
-This project is an experimental browser UI that runs as a Google Chrome app and
-uses webview tags.
+This project is an **experimental** browser UI that runs as a Google Chrome app
+and uses webview tags. It's in its **very early** stages at the moment.
+
+![Hex Browser Screenshot](screenshot.png)
 
 ## Key Features
 
