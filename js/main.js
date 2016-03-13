@@ -1,14 +1,29 @@
 require(['keybindings', 'tabs', 'welcome_screen'],
-  function(keybindings, tabs, welcome_screen){
+  function(keybindings, tabs, welcome_screen) {
   'use strict';
 
-  $(document).ready(function(){
+  $(document).ready(function() {
 
+    var $main_container = $('#main-container');
     var _templates = {};
 
-    $('#templates').children().each(function(){
+    $('#templates').children().each(function() {
       var $this = $(this);
       _templates[$this.data('template')] = $this.children().first();
+    });
+
+    $('.button-collapse').click(function() {
+      $main_container.toggleClass('collapsed-tree');
+    });
+
+    $('.reveal-container .button').mouseover(function() {
+      $main_container.addClass('reveal-tree');
+    });
+
+    $(window).mousemove(function(e) {
+      if (e.clientX > 300) {
+        $main_container.removeClass('reveal-tree');
+      }
     });
 
     welcome_screen.init();
