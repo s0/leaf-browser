@@ -7,7 +7,7 @@ and uses webview tags. It's in its **very early** stages at the moment.
 
 ## Key Features
 
-* A tree structure for managing your tabs.
+* A tree structure for managing your tabs (that you can choose to hide).
 * No distinction between bookmarks and tabs.
 * Ability to rename tabs.
 * Ability to "pin" tabs to prevent accidentally navigating away / closing.
@@ -18,7 +18,6 @@ and uses webview tags. It's in its **very early** stages at the moment.
 ## Roadmap
 
 * Improve Branding.
-* Collapsible Tab Area.
 * Settings Screen.
 * Ability to move tabs around.
 * Touch-Screen friendly interactivity for managing tabs.
