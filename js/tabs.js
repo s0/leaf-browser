@@ -515,6 +515,22 @@ define(['constants', 'storage'], function(C, storage){
         tab.setup_tab_content($webview);
       });
     });
+
+    // Intercept requests for pinned tabs
+    _webview.request.onBeforeRequest.addListener(function(details) {
+      if (this.pinned && details.type === 'main_frame' &&
+        details.method === 'GET' && details.url !== this.url){
+        var $webview = $tab_webview_template.clone();
+        $webview.get(0).src = details.url;
+        open_new_tab(function(tab){
+          tab.setup_tab_content($webview);
+        });
+        return {
+          cancel: true
+        };
+      }
+    }.bind(this),
+    {urls: ['*://*/*']}, ['blocking']);
   };
 
   Tab.prototype.focus_address_bar = function(){
