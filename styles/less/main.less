@@ -133,6 +133,22 @@ body {
                   display: flex;
                   margin-left: 25px;
 
+                  .color-indicator {
+                    margin: 3px 5px 0 0;
+                    min-width: 10px;
+                    height: 10px;
+                    border-radius: 3px;
+                    border: 1px solid rgba(0, 0, 0, 0.3);
+                    background-color: #999;
+
+                    &.small {
+                      min-width: 6px;
+                      height: 6px;
+                      margin: 5px 7px 0 2px;
+                    }
+
+                  }
+
                   .label {
                     flex-grow: 1;
                     text-overflow: ellipsis;
@@ -308,6 +324,10 @@ body {
           margin: 5px;
           flex-grow: 1;
           display: flex;
+
+          &.small {
+            flex-grow: initial;
+          }
 
           input {
             flex-grow: 1;

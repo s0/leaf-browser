@@ -160,6 +160,19 @@ define(['constants', 'storage'], function(C, storage){
     return this.$children.children().children('.tab').not('.hide').length !== 0;
   };
 
+  Tab.prototype.with_each_ancestor = function(callback) {
+    var _current = this;
+    while (true) {
+      _current = _current.parent ? _tabs[_current.parent] : null;
+      if (!_current){
+        return;
+      }
+      if(callback(_current)){
+        return;
+      }
+    }
+  };
+
   Tab.prototype.update_tab_text = function() {
     var _text;
     if(this.tab_name && this.tab_name !== '') {
@@ -168,6 +181,25 @@ define(['constants', 'storage'], function(C, storage){
       _text = this.title;
     }
     this.$node.children('.tab').find('.button .label').text(_text);
+  };
+
+  Tab.prototype.update_tab_color = function() {
+    var _color = this.tab_color;
+    var $color_indicator = this.$node.children('.tab').find('.color-indicator');
+    if (!_color){
+      this.with_each_ancestor(function(tab) {
+        if (tab.tab_color){
+          _color = tab.tab_color;
+          return true;
+        }
+      });
+    }
+    if (_color) {
+      $color_indicator.show().css('background-color', _color);
+      $color_indicator.toggleClass('small', !this.tab_color);
+    } else {
+      $color_indicator.hide();
+    }
   };
 
   Tab.prototype.update_by_data = function(data) {
@@ -214,15 +246,21 @@ define(['constants', 'storage'], function(C, storage){
       this.$node.removeClass('expanded');
     }
 
+    // Url
     if (!this.url) {
       this.url = data.url;
     }
 
+    // Title
     if (!this.title) {
       this.title = data.title ? data.title : "New Tab";
     }
     this.tab_name = data.tab_name;
     this.update_tab_text();
+
+    // Color
+    this.tab_color = data.tab_color;
+    this.update_tab_color();
 
     this.setup = true;
     this.update_display();
@@ -242,7 +280,8 @@ define(['constants', 'storage'], function(C, storage){
       expanded: this.expanded,
       url: this.url,
       title: this.title,
-      tab_name: this.tab_name
+      tab_name: this.tab_name,
+      tab_color: this.tab_color
     });
   };
 
@@ -284,6 +323,7 @@ define(['constants', 'storage'], function(C, storage){
 
     var $input_address_bar = this.$content.find('input.address-bar');
     var $input_tab_name = this.$content.find('input.tab-name');
+    var $input_tab_color = this.$content.find('input.tab-color');
 
     var $find_input = this.$content.find('.find-text');
     var $find_next = this.$content.find('.button-find-next');
@@ -379,6 +419,13 @@ define(['constants', 'storage'], function(C, storage){
       if(e.which === C.KEYCODES.ENTER){
         this.tab_name = $input_tab_name.val();
         this.update_tab_text();
+        this.store_tab_data();
+      }
+    }.bind(this));
+
+    $input_tab_color.keyup(function(e){
+      if(e.which === C.KEYCODES.ENTER){
+        this.tab_color = $input_tab_color.val();
         this.store_tab_data();
       }
     }.bind(this));
