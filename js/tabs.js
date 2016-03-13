@@ -333,6 +333,19 @@ define(['constants', 'storage'], function(C, storage){
       }.bind(this));
     }.bind(this);
 
+    var update_button_states = function() {
+      if (_webview.canGoBack()) {
+        $button_back.removeClass('disabled');
+      } else {
+        $button_back.addClass('disabled');
+      }
+      if (_webview.canGoForward()) {
+        $button_forward.removeClass('disabled');
+      } else {
+        $button_forward.addClass('disabled');
+      }
+    }.bind(this);
+
     // Listeners
 
     $button_settings.click(function(){
@@ -394,7 +407,6 @@ define(['constants', 'storage'], function(C, storage){
       } else {
         $find_info.text(e.activeMatchOrdinal + ' of ' + e.numberOfMatches);
       }
-      console.log("findupdate", e);
     });
 
     _webview.addEventListener("loadredirect", function(e){
@@ -408,12 +420,16 @@ define(['constants', 'storage'], function(C, storage){
         url_changed(e.url);
       }
       this.$node.addClass("loading").removeClass("ready");
+      this.$content.addClass("loading").removeClass("ready");
+      update_button_states();
     }.bind(this));
 
     _webview.addEventListener("loadstop", function(){
       url_changed(_webview.src);
       update_title();
       this.$node.removeClass("loading").addClass("ready");
+      this.$content.removeClass("loading").addClass("ready");
+      update_button_states();
     }.bind(this));
 
     _webview.addEventListener('newwindow', function(e) {

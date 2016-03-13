@@ -280,10 +280,28 @@ body {
             cursor: pointer;
 
             &:hover {
-              background-color: #d7d7d7;
+              background-color: #d3d3d3;
+            }
+
+            &.disabled {
+              cursor: default;
+              background-color: #ddd;
+              color: #999;
+            }
+
+            &.button-refresh, &.button-stop {
+              display: none;
             }
 
           }
+        }
+
+        &.ready .button-refresh {
+          display: block !important;
+        }
+
+        &.loading .button-stop {
+          display: block !important;
         }
 
         .input-text {
