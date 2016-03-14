@@ -20,6 +20,10 @@ require(['keybindings', 'tabs', 'welcome_screen'],
       $main_container.addClass('reveal-tree');
     });
 
+    $('.header .logo').click(function() {
+      tabs.unselect_current_tab();
+    });
+
     $(window).mousemove(function(e) {
       if (e.clientX > 300) {
         $main_container.removeClass('reveal-tree');

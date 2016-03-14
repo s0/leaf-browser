@@ -86,6 +86,12 @@ define(['constants', 'storage'], function(C, storage){
     });
   }
 
+  function unselect_current_tab(){
+    with_current(function(tab){
+      tab.unselect_tab();
+    });
+  }
+
   function refresh_current_tab(){
     with_current(function(tab){
       tab.get_webview().reload();
@@ -613,6 +619,7 @@ define(['constants', 'storage'], function(C, storage){
     open_new_tab: open_new_tab,
     focus_address_bar: focus_address_bar,
     close_current_tab: close_current_tab,
+    unselect_current_tab: unselect_current_tab,
     escape_current_tab: escape_current_tab,
     refresh_current_tab: refresh_current_tab,
     start_find: start_find

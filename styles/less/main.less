@@ -84,13 +84,24 @@ body {
         .logo {
           flex-grow: 1;
           padding: 5px 20px;
-          line-height: 40px;
           height: 50px;
-          font-size: 20px;
-          text-align: center;
+          display: flex;
+          justify-content: center;
           border-right: 1px solid #bbb;
-          white-space: nowrap;
-          overflow: hidden;
+          cursor: pointer;
+
+          &:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+          }
+
+          .text {
+            line-height: 40px;
+            font-size: 20px;
+            white-space: nowrap;
+            overflow: hidden;
+            color: #444;
+            margin-left: 15px;
+          }
         }
       }
 
@@ -331,7 +342,7 @@ body {
     > .app-right {
       height: 100%;
       flex-grow: 1;
-      background-color: rgba(0, 0, 0, 0.05);
+      background-color: #f3f3f3;
       position: relative;
 
       #welcome {
@@ -344,7 +355,17 @@ body {
         flex-flow: column;
         justify-content: center;
 
+        .logo {
+          text-align: center;
+
+          img {
+            width: 400px;
+            max-width: 80%;
+          }
+        }
+
         .hints {
+          margin-top: 20px;
 
           .hint {
             height: 0;
