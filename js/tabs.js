@@ -54,11 +54,13 @@ define(['constants', 'storage'], function(C, storage){
     });
   }
 
-  function open_new_tab(callback){
+  function open_new_tab(callback, select){
     get_free_tab_id(function(id){
       var _tab = new Tab(id);
       _tab.append_to_tab(_current);
-      _tab.select_tab();
+      if (select) {
+        _tab.select_tab();
+      }
       if (callback) {
         callback(_tab);
       }
@@ -320,10 +322,7 @@ define(['constants', 'storage'], function(C, storage){
     _current = this.id;
     this.$node.addClass('selected');
 
-    if(!this.$content){
-      this.$content = $tab_content_template.clone().appendTo($tabs);
-      this.setup_tab_content();
-    }
+    this.setup_tab_content();
     this.$content.show();
   };
 
@@ -332,6 +331,12 @@ define(['constants', 'storage'], function(C, storage){
   };
 
   Tab.prototype.setup_tab_content = function($existing_webview){
+    if (this.$content && !$existing_webview) {
+      return;
+    }
+    if (!this.$content) {
+      this.$content = $tab_content_template.clone().appendTo($tabs).hide();
+    }
     var $button_back_to_pin = this.$content.find('.button-back-to-pin');
     var $button_back = this.$content.find('.button-back');
     var $button_forward = this.$content.find('.button-forward');
@@ -516,23 +521,21 @@ define(['constants', 'storage'], function(C, storage){
 
     _webview.addEventListener('newwindow', function(e) {
       var $webview = $tab_webview_template.clone();
-      var _current_tab = _current;
       e.window.attach($webview.get(0));
       open_new_tab(function(tab){
         tab.setup_tab_content($webview);
         if (e.windowOpenDisposition === 'ignore'
           || e.windowOpenDisposition === 'new_background_tab') {
-          setTimeout(function(){
-            tab.unselect_tab();
-            if (_current_tab !== null){
-              var _tab = _tabs[_current_tab];
-              if (_tab) {
-                _tab.select_tab();
-              }
-            }
-          }, 0);
+            // Quickly momentatily display the content to trigger webview to load
+            // TODO: improve this hack
+            tab.$content.css('z-index', -100).show();
+            setTimeout(function(){
+              tab.$content.css('z-index', 'initial').hide();
+            }, 100);
+        } else {
+          tab.select_tab();
         }
-      });
+      }, false);
     });
 
     _webview.addEventListener('close', function() {
@@ -547,7 +550,7 @@ define(['constants', 'storage'], function(C, storage){
         $webview.get(0).src = details.url;
         open_new_tab(function(tab){
           tab.setup_tab_content($webview);
-        });
+        }, true);
         return {
           cancel: true
         };

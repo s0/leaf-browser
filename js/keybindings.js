@@ -30,7 +30,7 @@ define(['constants', 'storage','tabs'], function(C, storage, tabs){
           break;
         case C.KEYCODES.T:
           if (e.ctrlKey) {
-            tabs.open_new_tab();
+            tabs.open_new_tab(null, true);
           }
           break;
         case C.KEYCODES.W:
