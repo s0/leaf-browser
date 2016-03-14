@@ -1,4 +1,8 @@
-# Hex Browser
+<p align="center">
+  <a href="https://chrome.google.com/webstore/detail/leaf-browser-alpha/nefehiekhccmedmdoilmhikhdiiijkbe"><img src="docs/webstore.png" /></a>
+</p>
+
+# Leaf Browser Alpha
 
 This project is an **experimental** browser UI that runs as a Google Chrome app
 and uses webview tags. It's in its **very early** stages at the moment.
@@ -32,8 +36,11 @@ and uses webview tags. It's in its **very early** stages at the moment.
 
 ## Installation
 
-At some point (when I feel like the app is polished enough), I will distribute
-it on the Chrome Web Store, but until then you can install it like so:
+You can install from the [chrome web store](https://chrome.google.com/webstore/detail/leaf-browser-alpha/nefehiekhccmedmdoilmhikhdiiijkbe).
+
+[![Avaliable from the Chrome webstore](docs/webstore.png)](https://chrome.google.com/webstore/detail/leaf-browser-alpha/nefehiekhccmedmdoilmhikhdiiijkbe)
+
+You can also install it like so:
 
 1. Make sure you have Google Chrome or Chromium installed.
 2. Install `npm` and `grunt`.
