@@ -4,6 +4,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-zip');
 
     grunt.initConfig({
         less: {
@@ -34,6 +35,16 @@ module.exports = function(grunt) {
             '!js/lib/**/*.js',
           ],
         },
+        zip: {
+          'dist.zip': [
+            'fonts/**/*',
+            'images/**/*',
+            'js/**/*',
+            'styles/css/**/*',
+            'background.js',
+            'index.html',
+            'manifest.json']
+        }
     });
 
     grunt.registerTask('default', ['less', 'jshint']);
