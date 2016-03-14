@@ -164,7 +164,7 @@ define(['constants', 'storage'], function(C, storage){
   Tab.prototype.with_each_ancestor = function(callback) {
     var _current = this;
     while (true) {
-      _current = _current.parent ? _tabs[_current.parent] : null;
+      _current = (_current.parent || _current.parent === 0) ? _tabs[_current.parent] : null;
       if (!_current){
         return;
       }
