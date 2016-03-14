@@ -516,9 +516,22 @@ define(['constants', 'storage'], function(C, storage){
 
     _webview.addEventListener('newwindow', function(e) {
       var $webview = $tab_webview_template.clone();
+      var _current_tab = _current;
       e.window.attach($webview.get(0));
       open_new_tab(function(tab){
         tab.setup_tab_content($webview);
+        if (e.windowOpenDisposition === 'ignore'
+          || e.windowOpenDisposition === 'new_background_tab') {
+          setTimeout(function(){
+            tab.unselect_tab();
+            if (_current_tab !== null){
+              var _tab = _tabs[_current_tab];
+              if (_tab) {
+                _tab.select_tab();
+              }
+            }
+          }, 0);
+        }
       });
     });
 
