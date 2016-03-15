@@ -6,6 +6,7 @@ define([], function(){
     ESC: 27,
     F: 70,
     L: 76,
+    N: 78,
     Q: 81,
     R: 82,
     T: 84,

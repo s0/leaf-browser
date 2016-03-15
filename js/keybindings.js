@@ -18,6 +18,11 @@ define(['constants', 'storage','tabs'], function(C, storage, tabs){
             tabs.focus_address_bar();
           }
           break;
+        case C.KEYCODES.N:
+          if(e.ctrlKey) {
+            tabs.open_new_root_tab(null, true);
+          }
+          break;
         case C.KEYCODES.Q:
           if (e.ctrlKey) {
             storage.clear();

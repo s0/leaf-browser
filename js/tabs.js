@@ -18,7 +18,7 @@ define(['constants', 'storage'], function(C, storage){
     $tabs = $('.app-right .tabs');
 
     var $new_tab_button = $('.new-tab-button');
-    $new_tab_button.click(open_root_tab);
+    $new_tab_button.click(open_new_root_tab);
 
     // Add existing tabs
     storage.load_tabs(function(tabs){
@@ -46,7 +46,7 @@ define(['constants', 'storage'], function(C, storage){
       _current = null;
   }
 
-  function open_root_tab(){
+  function open_new_root_tab(){
     get_free_tab_id(function(id){
       var _tab = new Tab(id);
       _tab.append_to_root();
@@ -633,6 +633,7 @@ define(['constants', 'storage'], function(C, storage){
   return {
     init: init,
     open_new_tab: open_new_tab,
+    open_new_root_tab: open_new_root_tab,
     focus_address_bar: focus_address_bar,
     close_current_tab: close_current_tab,
     unselect_current_tab: unselect_current_tab,
