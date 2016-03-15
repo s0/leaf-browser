@@ -122,7 +122,7 @@ define(['constants', 'storage'], function(C, storage){
   }
 
   function address_bar_text_to_url(text){
-    if (C.REGEXES.DOMAIN.exec(text)) {
+    if (C.REGEXES.URL_NO_PROTO.exec(text)) {
       return "https://" + text;
     }
     if (C.REGEXES.URL.exec(text)) {

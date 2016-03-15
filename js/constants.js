@@ -15,7 +15,7 @@ define([], function(){
 
   var REGEXES = {
     // Basic regex that tries to attempt to match a domain name
-    DOMAIN: /^[a-z0-9\-\_]+(\.[a-z0-9\-\_]+)+$/,
+    URL_NO_PROTO: /^[a-z0-9\-\_]+(\.[a-z0-9\-\_]+)+(\/.*)?$/,
     URL: /^[a-z]+\:\/\/.*$/
   };
 
