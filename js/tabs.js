@@ -322,19 +322,24 @@ define(['constants', 'storage'], function(C, storage){
     _current = this.id;
     this.$node.addClass('selected');
 
-    this.setup_tab_content();
+    var _new = this.setup_tab_content();
     this.$content.show();
+    if (_new){
+      this.focus_address_bar();
+    }
   };
 
   Tab.prototype.get_webview = function(){
     return this.$content.find('webview').get(0);
   };
 
+  // Return true if this is the first time that this.$content has been setup
   Tab.prototype.setup_tab_content = function($existing_webview){
     if (this.$content && !$existing_webview) {
-      return;
+      return false;
     }
-    if (!this.$content) {
+    var _new = !this.$content;
+    if (_new) {
       this.$content = $tab_content_template.clone().appendTo($tabs).hide();
     }
     var $button_back_to_pin = this.$content.find('.button-back-to-pin');
@@ -557,9 +562,12 @@ define(['constants', 'storage'], function(C, storage){
       }
     }.bind(this),
     {urls: ['*://*/*']}, ['blocking']);
+
+    return _new;
   };
 
   Tab.prototype.focus_address_bar = function(){
+    console.log("focus");
     this.$content.find('input.address-bar').focus().select();
   };
 
