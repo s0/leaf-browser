@@ -524,8 +524,8 @@ define(['constants', 'storage'], function(C, storage){
       e.window.attach($webview.get(0));
       open_new_tab(function(tab){
         tab.setup_tab_content($webview);
-        if (e.windowOpenDisposition === 'ignore'
-          || e.windowOpenDisposition === 'new_background_tab') {
+        if (e.windowOpenDisposition === 'ignore' ||
+            e.windowOpenDisposition === 'new_background_tab') {
             // Quickly momentatily display the content to trigger webview to load
             // TODO: improve this hack
             tab.$content.css('z-index', -100).show();
