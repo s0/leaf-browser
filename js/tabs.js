@@ -583,8 +583,6 @@ define(['constants', 'storage'], function(C, storage){
     if (this.$content.hasClass('find-enabled')){
       this.$content.removeClass('find-enabled');
       this.get_webview().stopFinding("clear");
-    } else {
-      this.unselect_tab();
     }
   };
 
