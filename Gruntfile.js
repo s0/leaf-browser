@@ -48,4 +48,5 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('default', ['less', 'jshint']);
+    grunt.registerTask('dist', ['default', 'zip']);
 };
