@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Leaf Browser Alpha",
-  "version": "0.1",
+  "version": "0.1.1",
   "author": "Sam Lanning <sam@samlanning.com>",
 
   "description": "An experimental browser that runs in chrome.",
