@@ -146,256 +146,258 @@ define(['constants', 'storage', 'tab_content'], function(C, storage, tab_content
     }.bind(this));
   }
 
-  Tab.prototype.has_children = function() {
-    return this.$children.children().children('.tab').not('.hide').length !== 0;
-  };
+  $.extend(Tab.prototype, {
+    has_children: function() {
+      return this.$children.children().children('.tab').not('.hide').length !== 0;
+    },
 
-  Tab.prototype.with_each_ancestor = function(callback) {
-    var _current = this;
-    while (true) {
-      _current = (_current.parent || _current.parent === 0) ? _tabs[_current.parent] : null;
-      if (!_current){
-        return;
-      }
-      if(callback(_current)){
-        return;
-      }
-    }
-  };
-
-  Tab.prototype.update_tab_text = function() {
-    var _text;
-    if(this.tab_name && this.tab_name !== '') {
-      _text = this.tab_name;
-    } else {
-      _text = this.title;
-    }
-    this.$node.children('.tab').find('.button .label').text(_text);
-  };
-
-  Tab.prototype.update_tab_color = function() {
-    var _color = this.tab_color;
-    var $color_indicator = this.$node.children('.tab').find('.color-indicator');
-    if (!_color){
-      this.with_each_ancestor(function(tab) {
-        if (tab.tab_color){
-          _color = tab.tab_color;
-          return true;
+    with_each_ancestor: function(callback) {
+      var _current = this;
+      while (true) {
+        _current = (_current.parent || _current.parent === 0) ? _tabs[_current.parent] : null;
+        if (!_current){
+          return;
         }
-      });
-    }
-    if (_color) {
-      $color_indicator.show().css('background-color', _color);
-      $color_indicator.toggleClass('small', !this.tab_color);
-    } else {
-      $color_indicator.hide();
-    }
-  };
-
-  Tab.prototype.update_by_data = function(data) {
-    // Never modify the data in this method
-    if(data === undefined){
-      // The tab has been deleted
-      delete _tabs[this.id];
-      this.$node.children('.tab').addClass('hide');
-      setTimeout(function (){
-        this.$node.remove();
-      }.bind(this), 500);
-      if (this.$content) {
-        this.$content.remove();
+        if(callback(_current)){
+          return;
+        }
       }
-      // Update Parent if Neccesary
-      if (this.parent !== null) {
-        _tabs[this.parent].update_display();
-      }
-      return;
-    }
+    },
 
-    // Parent
-    if (this.parent !== data.parent || !this.setup) {
-      if (data.parent !== null){
-        var _parent_tab = _tabs[data.parent];
-        if (_parent_tab){
-          this.$node.appendTo(_parent_tab.$children);
-          this.parent = data.parent;
-          _parent_tab.update_display();
+    update_tab_text: function() {
+      var _text;
+      if(this.tab_name && this.tab_name !== '') {
+        _text = this.tab_name;
+      } else {
+        _text = this.title;
+      }
+      this.$node.children('.tab').find('.button .label').text(_text);
+    },
+
+    update_tab_color: function() {
+      var _color = this.tab_color;
+      var $color_indicator = this.$node.children('.tab').find('.color-indicator');
+      if (!_color){
+        this.with_each_ancestor(function(tab) {
+          if (tab.tab_color){
+            _color = tab.tab_color;
+            return true;
+          }
+        });
+      }
+      if (_color) {
+        $color_indicator.show().css('background-color', _color);
+        $color_indicator.toggleClass('small', !this.tab_color);
+      } else {
+        $color_indicator.hide();
+      }
+    },
+
+    update_by_data: function(data) {
+      // Never modify the data in this method
+      if(data === undefined){
+        // The tab has been deleted
+        delete _tabs[this.id];
+        this.$node.children('.tab').addClass('hide');
+        setTimeout(function (){
+          this.$node.remove();
+        }.bind(this), 500);
+        if (this.$content) {
+          this.$content.remove();
+        }
+        // Update Parent if Neccesary
+        if (this.parent !== null) {
+          _tabs[this.parent].update_display();
+        }
+        return;
+      }
+
+      // Parent
+      if (this.parent !== data.parent || !this.setup) {
+        if (data.parent !== null){
+          var _parent_tab = _tabs[data.parent];
+          if (_parent_tab){
+            this.$node.appendTo(_parent_tab.$children);
+            this.parent = data.parent;
+            _parent_tab.update_display();
+          } else {
+            console.error("Parent does not exist");
+          }
         } else {
-          console.error("Parent does not exist");
+          this.$node.appendTo($tab_tree);
+          this.parent = null;
         }
-      } else {
-        this.$node.appendTo($tab_tree);
-        this.parent = null;
       }
-    }
 
-    if (data.expanded) {
-      this.expanded = true;
-      this.$node.addClass('expanded');
-    } else {
-      this.expanded = false;
-      this.$node.removeClass('expanded');
-    }
-
-    // Url
-    if (!this.url) {
-      this.url = data.url;
-    }
-
-    // Title
-    if (!this.title) {
-      this.title = data.title ? data.title : "New Tab";
-    }
-    this.tab_name = data.tab_name;
-    this.update_tab_text();
-
-    // Color
-    this.tab_color = data.tab_color;
-    this.update_tab_color();
-
-    this.pinned = !!data.pinned;
-
-    this.setup = true;
-    this.update_display();
-    this.update_content_display();
-  };
-
-  Tab.prototype.update_display = function(){
-    this.$node.toggleClass('has-children', this.has_children());
-    this.$node.toggleClass('pinned', this.pinned);
-  };
-
-  Tab.prototype.with_content = function(callback, create) {
-    var _new = false;
-    if (!this.content && create) {
-      _new = true;
-      this.content = new tab_content.TabContent(this);
-    }
-    if (this.content) {
-      callback(this.content);
-    }
-    return _new;
-  };
-
-  Tab.prototype.update_content_display = function(){
-    this.with_content(function(content) {
-      content.update_display();
-    });
-  };
-
-  Tab.prototype.store_tab_data = function(){
-    storage.set_tab_data(this.id, {
-      parent: this.parent,
-      expanded: this.expanded,
-      url: this.url,
-      title: this.title,
-      tab_name: this.tab_name,
-      tab_color: this.tab_color,
-      pinned: this.pinned
-    });
-  };
-
-  Tab.prototype.button_clicked = function(e){
-    this.select_tab();
-  };
-
-  Tab.prototype.arrow_clicked = function(e){
-    this.expanded = !this.expanded;
-    this.store_tab_data();
-  };
-
-  Tab.prototype.select_tab = function(){
-    with_current(function(tab){
-      tab.unselect_tab();
-    });
-    _current = this.id;
-    this.$node.addClass('selected');
-
-    var _new = this.setup_tab_content();
-    this.content.show();
-    if (_new){
-      this.content.focus_address_bar();
-    }
-  };
-
-  // Return true if this is the first time that this.$content has been setup
-  Tab.prototype.setup_tab_content = function($existing_webview){
-    // Object to give TabContent to control tabs
-    var _tab_control = {
-      open_new_tab: open_new_tab
-    };
-    if (!this.content) {
-      this.content = new tab_content.TabContent(_tab_control, this, $existing_webview);
-      return true;
-    }
-    if ($existing_webview && this.content) {
-      throw new Error("this.content already setup for tab", this);
-    }
-    return false;
-  };
-
-  Tab.prototype.unselect_tab = function(){
-    this.$node.removeClass('selected');
-    this.content.hide();
-    if (this.id === _current) {
-      _current = null;
-    }
-  };
-
-  Tab.prototype.escape_tab = function(){
-    this.with_content(function(content) {
-      content.escape_content();
-    });
-  };
-
-  Tab.prototype.start_find = function(){
-    this.with_content(function(content) {
-      content.start_find();
-    });
-  };
-
-  Tab.prototype.close_tab = function(){
-    // Don't close if pinned
-    // TODO: show message
-    if (this.pinned) {
-      return;
-    }
-    // If the tab has children, don't close
-    // TODO: confirm
-    if (this.has_children()) {
-      return;
-    }
-    // Switch to a new tab if possible (parent)
-    if (_current === this.id) {
-      if (this.parent !== null){
-        var _parent = _tabs[this.parent];
-        _parent.select_tab();
+      if (data.expanded) {
+        this.expanded = true;
+        this.$node.addClass('expanded');
       } else {
-        this.unselect_tab();
+        this.expanded = false;
+        this.$node.removeClass('expanded');
+      }
+
+      // Url
+      if (!this.url) {
+        this.url = data.url;
+      }
+
+      // Title
+      if (!this.title) {
+        this.title = data.title ? data.title : "New Tab";
+      }
+      this.tab_name = data.tab_name;
+      this.update_tab_text();
+
+      // Color
+      this.tab_color = data.tab_color;
+      this.update_tab_color();
+
+      this.pinned = !!data.pinned;
+
+      this.setup = true;
+      this.update_display();
+      this.update_content_display();
+    },
+
+    update_display: function(){
+      this.$node.toggleClass('has-children', this.has_children());
+      this.$node.toggleClass('pinned', this.pinned);
+    },
+
+    with_content: function(callback, create) {
+      var _new = false;
+      if (!this.content && create) {
+        _new = true;
+        this.content = new tab_content.TabContent(this);
+      }
+      if (this.content) {
+        callback(this.content);
+      }
+      return _new;
+    },
+
+    update_content_display: function(){
+      this.with_content(function(content) {
+        content.update_display();
+      });
+    },
+
+    store_tab_data: function(){
+      storage.set_tab_data(this.id, {
+        parent: this.parent,
+        expanded: this.expanded,
+        url: this.url,
+        title: this.title,
+        tab_name: this.tab_name,
+        tab_color: this.tab_color,
+        pinned: this.pinned
+      });
+    },
+
+    button_clicked: function(e){
+      this.select_tab();
+    },
+
+    arrow_clicked: function(e){
+      this.expanded = !this.expanded;
+      this.store_tab_data();
+    },
+
+    select_tab: function(){
+      with_current(function(tab){
+        tab.unselect_tab();
+      });
+      _current = this.id;
+      this.$node.addClass('selected');
+
+      var _new = this.setup_tab_content();
+      this.content.show();
+      if (_new){
+        this.content.focus_address_bar();
+      }
+    },
+
+    // Return true if this is the first time that this.$content has been setup
+    setup_tab_content: function($existing_webview){
+      // Object to give TabContent to control tabs
+      var _tab_control = {
+        open_new_tab: open_new_tab
+      };
+      if (!this.content) {
+        this.content = new tab_content.TabContent(_tab_control, this, $existing_webview);
+        return true;
+      }
+      if ($existing_webview && this.content) {
+        throw new Error("this.content already setup for tab", this);
+      }
+      return false;
+    },
+
+    unselect_tab: function(){
+      this.$node.removeClass('selected');
+      this.content.hide();
+      if (this.id === _current) {
         _current = null;
       }
-    }
-    // Delete Tab Data
-    storage.set_tab_data(this.id, undefined);
-  };
+    },
 
-  Tab.prototype.append_to_tab = function(id){
-    if (id !== null){
-      this.parent = id;
-      this.store_tab_data();
-      var _parent_tab = _tabs[this.parent];
-      if(!_parent_tab.expanded){
-        _parent_tab.expanded = true;
-        _parent_tab.store_tab_data();
+    escape_tab: function(){
+      this.with_content(function(content) {
+        content.escape_content();
+      });
+    },
+
+    start_find: function(){
+      this.with_content(function(content) {
+        content.start_find();
+      });
+    },
+
+    close_tab: function(){
+      // Don't close if pinned
+      // TODO: show message
+      if (this.pinned) {
+        return;
       }
-    } else {
-      this.append_to_root();
-    }
-  };
+      // If the tab has children, don't close
+      // TODO: confirm
+      if (this.has_children()) {
+        return;
+      }
+      // Switch to a new tab if possible (parent)
+      if (_current === this.id) {
+        if (this.parent !== null){
+          var _parent = _tabs[this.parent];
+          _parent.select_tab();
+        } else {
+          this.unselect_tab();
+          _current = null;
+        }
+      }
+      // Delete Tab Data
+      storage.set_tab_data(this.id, undefined);
+    },
 
-  Tab.prototype.append_to_root = function(){
-    this.parent = null;
-    this.store_tab_data();
-  };
+    append_to_tab: function(id){
+      if (id !== null){
+        this.parent = id;
+        this.store_tab_data();
+        var _parent_tab = _tabs[this.parent];
+        if(!_parent_tab.expanded){
+          _parent_tab.expanded = true;
+          _parent_tab.store_tab_data();
+        }
+      } else {
+        this.append_to_root();
+      }
+    },
+
+    append_to_root: function(){
+      this.parent = null;
+      this.store_tab_data();
+    },
+  });
 
   return {
     init: init,
