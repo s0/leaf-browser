@@ -479,7 +479,12 @@ body {
           line-height: 30px;
         }
 
-        .top, .settings .inner, .find .inner {
+        @keyframes show-bar {
+            from {min-height: 0; height: 0;}
+            to {min-height: 51px; height: 51px;}
+        }
+
+        .top, .settings .inner, .find .inner, .alert {
           display: flex;
           flex-direction: row;
           padding: 5px;
@@ -490,6 +495,14 @@ body {
 
         .top {
           transition: padding-left 0.5s;
+        }
+
+        .alert {
+          animation: show-bar 500ms 1 ease;
+
+          .label {
+            flex-grow: 1;
+          }
         }
 
         .settings, .find {

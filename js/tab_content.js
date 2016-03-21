@@ -2,12 +2,14 @@ define(['constants', 'util'], function(C, util){
   'use strict';
 
   var $tab_content_template;
+  var $tab_content_alert_template;
   var $tab_webview_template;
   var $tabs;
 
   function init(templates){
     $tabs = $('.app-right .tabs');
     $tab_content_template = templates['tab-content'];
+    $tab_content_alert_template = templates['tab-content-alert'];
     $tab_webview_template = templates['tab-webview'];
   }
 
@@ -32,6 +34,8 @@ define(['constants', 'util'], function(C, util){
       $find_next: this.$content.find('.button-find-next'),
       $find_prev: this.$content.find('.button-find-prev'),
       $find_info: this.$content.find('.find-info'),
+
+      $alerts: this.$content.find('.alerts')
     };
     this._webview = null;
     this._setup_listeners();
@@ -64,6 +68,7 @@ define(['constants', 'util'], function(C, util){
       this._webview.addEventListener("loadstart", function(e){
         if(e.isTopLevel){
           this._url_changed(e.url);
+          this.dismiss_alerts();
         }
         this.tab.$node.addClass("loading").removeClass("ready");
         this.$content.addClass("loading").removeClass("ready");
@@ -99,6 +104,84 @@ define(['constants', 'util'], function(C, util){
 
       this._webview.addEventListener('close', function() {
         this.tab.close_tab();
+      }.bind(this));
+
+      // TODO: this is really not nice
+      // we want to replace this with maybe some way of storing / remembering
+      // granted permissions
+      var _permission_responses = {};
+      var _set_permission_response = function(permission, domain, val){
+        if (_permission_responses[permission] === undefined){
+          _permission_responses[permission] = {};
+        }
+        _permission_responses[permission][domain] = val;
+      };
+      var _get_permission_response = function(permission, domain){
+        var _p = _permission_responses[permission];
+        return _p ? _p[domain] : undefined;
+      };
+
+      this._webview.addEventListener('permissionrequest', function(e) {
+        var _domain = null;
+        var _text = null;
+        switch (e.permission) {
+          case "media":
+            _domain = e.request.url;
+            _text = "The website " + e.request.url + " wants to be given access to your webcam and microphone";
+            break;
+          case "geolocation":
+            _domain = e.request.url;
+            _text = "The website " + e.request.url + " wants to be given access to your geographical location";
+            break;
+          case "pointerLock":
+            _domain = e.request.url;
+            _text = "The website " + e.request.url + " wants to lock your mouse cursor";
+            break;
+          case "download":
+            e.request.allow();
+            return;
+          case "loadplugin":
+            _domain = "*";
+            _text = "This website wants to run the plugin " + e.request.name;
+            break;
+          case "filesystem":
+            _domain = e.request.url;
+            _text = "The website " + e.request.url + " wants to be given access to files on your computer";
+            break;
+          case "fullscreen":
+            _domain = e.request.origin;
+            _text = "The website " + e.request.origin + " wants to go full screen";
+            break;
+          default:
+            console.error("Unknown permission request: ", e);
+            return;
+        }
+        if (_get_permission_response(e.permission, _domain)) {
+          e.request.allow();
+          return;
+        }
+        // TODO: find out if there is a way to wait for a user response before
+        // handling a permission request (we want an async api for e.request)
+        this.user_alert(_text, [
+          {
+            label: "Allow",
+            callback: function(){
+              _set_permission_response(e.permission, _domain, true);
+              this.user_alert("Permission Granted, you may need to retry / refresh the page", [
+                {
+                  label: "OK"
+                },
+              ]);
+            }.bind(this)
+          },
+          {
+            label: "Deny",
+            callback: function(){
+              _set_permission_response(e.permission, _domain, false);
+            }
+          }
+        ]);
+        e.request.deny();
       }.bind(this));
 
       // Intercept requests for pinned tabs
@@ -275,6 +358,27 @@ define(['constants', 'util'], function(C, util){
         this.$content.removeClass('find-enabled');
         this.webview().stopFinding("clear");
       }
+    },
+
+    user_alert: function(text, options) {
+      var $alert = $tab_content_alert_template.clone();
+      var $buttons = $alert.find('.buttons');
+      $alert.find('.label').text(text);
+      options.forEach(function(option) {
+        var $button = $('<div/>').addClass('button').text(option.label);
+        $button.click(function() {
+          $alert.remove();
+          if (option.callback) {
+            option.callback();
+          }
+        });
+        $button.appendTo($buttons);
+      });
+      this.elems.$alerts.append($alert);
+    },
+
+    dismiss_alerts: function() {
+      this.elems.$alerts.children().remove();
     }
   });
 

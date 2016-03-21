@@ -20,6 +20,10 @@
   "permissions": [
     "storage",
     "webview",
+    "audioCapture",
+    "videoCapture",
+    "fullscreen",
+    "pointerLock",
     "http://*/*",
     "https://*/*"
     ]
