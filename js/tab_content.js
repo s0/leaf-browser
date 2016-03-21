@@ -94,7 +94,7 @@ define(['constants', 'util'], function(C, util){
           } else {
             tab.select_tab();
           }
-        }, false);
+        });
       }.bind(this));
 
       this._webview.addEventListener('close', function() {
@@ -109,7 +109,8 @@ define(['constants', 'util'], function(C, util){
           $webview.get(0).src = details.url;
           this.tab_control.open_new_tab(function(tab){
             tab.setup_tab_content($webview);
-          }, true);
+            tab.select_tab();
+          });
           return {
             cancel: true
           };

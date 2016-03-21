@@ -327,6 +327,9 @@ define(['constants', 'storage', 'tab_content'], function(C, storage, tab_content
       this.content = new tab_content.TabContent(_tab_control, this, $existing_webview);
       return true;
     }
+    if ($existing_webview && this.content) {
+      throw new Error("this.content already setup for tab", this);
+    }
     return false;
   };
 
