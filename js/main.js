@@ -1,5 +1,5 @@
-require(['keybindings', 'tabs', 'welcome_screen'],
-  function(keybindings, tabs, welcome_screen) {
+require(['keybindings', 'tabs', 'tab_content', 'welcome_screen'],
+  function(keybindings, tabs, tab_content, welcome_screen) {
   'use strict';
 
   $(document).ready(function() {
@@ -33,6 +33,7 @@ require(['keybindings', 'tabs', 'welcome_screen'],
     welcome_screen.init();
     keybindings.init();
     tabs.init(_templates);
+    tab_content.init(_templates);
 
   });
 });

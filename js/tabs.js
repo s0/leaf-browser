@@ -1,10 +1,8 @@
-define(['constants', 'storage'], function(C, storage){
+define(['constants', 'storage', 'tab_content'], function(C, storage, tab_content){
   'use strict';
 
   var _next_tab_id = 0;
   var $node_template;
-  var $tab_content_template;
-  var $tab_webview_template;
   var $tab_tree;
   var $tabs;
   var _current = null;
@@ -12,10 +10,7 @@ define(['constants', 'storage'], function(C, storage){
 
   function init(templates){
     $node_template = templates['tab-tree-node'];
-    $tab_content_template = templates['tab-content'];
-    $tab_webview_template = templates['tab-webview'];
     $tab_tree = $('.tab-tree');
-    $tabs = $('.app-right .tabs');
 
     var $new_tab_button = $('.new-tab-button');
     $new_tab_button.click(open_new_root_tab);
@@ -121,27 +116,13 @@ define(['constants', 'storage'], function(C, storage){
     });
   }
 
-  function address_bar_text_to_url(text){
-    if (C.REGEXES.URL_NO_PROTO.exec(text)) {
-      return "https://" + text;
-    }
-    if (C.REGEXES.URL.exec(text)) {
-      return text;
-    }
-    // Return a google search
-    return 'https://www.google.com/search?q=' + text;
-  }
-
-  function url_to_address_bar_text(url){
-    return url;
-  }
-
   function Tab(id, tab_data){
     _tabs[id] = this;
     this.id = id;
     this.$node = $node_template.clone();
     this.$children = this.$node.children('.children').first();
     this.$content = null;
+    this.content = null;
     this.parent = null;
 
     if (tab_data === undefined) {
@@ -283,15 +264,22 @@ define(['constants', 'storage'], function(C, storage){
     this.$node.toggleClass('pinned', this.pinned);
   };
 
-  Tab.prototype.update_content_display = function(){
-    if (this.$content){
-      var _webview = this.get_webview();
-      this.$content.find('input.tab-name').val(this.tab_name);
-      this.$content.find('input.tab-color').val(this.tab_color);
-      this.$content.find('.button-pin').toggleClass('pinned', this.pinned);
-      this.$content.find('.button-back-to-pin').toggleClass('disabled',
-        !this.pinned || !this.url || (_webview && this.url === _webview.src));
+  Tab.prototype.with_content = function(callback, create) {
+    var _new = false;
+    if (!this.content && create) {
+      _new = true;
+      this.content = new tab_content.TabContent(this);
     }
+    if (this.content) {
+      callback(this.content);
+    }
+    return _new;
+  };
+
+  Tab.prototype.update_content_display = function(){
+    this.with_content(function(content) {
+      content.update_display();
+    });
   };
 
   Tab.prototype.store_tab_data = function(){
@@ -323,273 +311,43 @@ define(['constants', 'storage'], function(C, storage){
     this.$node.addClass('selected');
 
     var _new = this.setup_tab_content();
-    this.$content.show();
+    this.content.show();
     if (_new){
-      this.focus_address_bar();
+      this.content.focus_address_bar();
     }
-  };
-
-  Tab.prototype.get_webview = function(){
-    return this.$content.find('webview').get(0);
   };
 
   // Return true if this is the first time that this.$content has been setup
   Tab.prototype.setup_tab_content = function($existing_webview){
-    if (this.$content && !$existing_webview) {
-      return false;
+    // Object to give TabContent to control tabs
+    var _tab_control = {
+      open_new_tab: open_new_tab
+    };
+    if (!this.content) {
+      this.content = new tab_content.TabContent(_tab_control, this, $existing_webview);
+      return true;
     }
-    var _new = !this.$content;
-    if (_new) {
-      this.$content = $tab_content_template.clone().appendTo($tabs).hide();
-    }
-    var $button_back_to_pin = this.$content.find('.button-back-to-pin');
-    var $button_back = this.$content.find('.button-back');
-    var $button_forward = this.$content.find('.button-forward');
-    var $button_refresh = this.$content.find('.button-refresh');
-    var $button_stop = this.$content.find('.button-stop');
-    var $button_settings = this.$content.find('.button-settings');
-    var $button_pin = this.$content.find('.button-pin');
-
-    var $input_address_bar = this.$content.find('input.address-bar');
-    var $input_tab_name = this.$content.find('input.tab-name');
-    var $input_tab_color = this.$content.find('input.tab-color');
-
-    var $find_input = this.$content.find('.find-text');
-    var $find_next = this.$content.find('.button-find-next');
-    var $find_prev = this.$content.find('.button-find-prev');
-    var $find_info = this.$content.find('.find-info');
-    var _last_find = null;
-
-    this.update_content_display();
-
-    var $webview;
-    if ($existing_webview){
-      $webview = $existing_webview;
-    } else {
-      $webview = $tab_webview_template.clone();
-    }
-    $webview.appendTo(this.$content.find('.webview-wrapper'));
-    var _webview = $webview.get(0);
-
-    if (this.url){
-      _webview.src = this.url;
-    } else {
-      this.focus_address_bar();
-    }
-
-    // Functions
-
-    var url_changed = function(url) {
-      $input_address_bar.val(url_to_address_bar_text(url));
-      // Store current url
-      if (this.url !== url && !this.pinned) {
-        this.url = url;
-        this.store_tab_data();
-      }
-    }.bind(this);
-
-    var update_title = function(){
-      _webview.executeScript({ code: "document.title" }, function(arr){
-        var _title;
-        if (!arr || arr.length === 0 || !(arr[0])) {
-          _title = "Untitled";
-        } else {
-          _title = arr[0];
-        }
-        if(this.title !== _title){
-          this.title = _title;
-          this.update_tab_text();
-          this.store_tab_data();
-        }
-      }.bind(this));
-    }.bind(this);
-
-    var update_button_states = function() {
-      if (_webview.canGoBack()) {
-        $button_back.removeClass('disabled');
-      } else {
-        $button_back.addClass('disabled');
-      }
-      if (_webview.canGoForward()) {
-        $button_forward.removeClass('disabled');
-      } else {
-        $button_forward.addClass('disabled');
-      }
-      this.update_content_display();
-    }.bind(this);
-
-    // Listeners
-
-    $button_settings.click(function(){
-      $tabs.toggleClass('show-settings');
-    });
-
-    $button_back_to_pin.click(function(){
-      _webview.src = this.url;
-    }.bind(this));
-
-    $button_back.click(function(){
-      _webview.back();
-    });
-
-    $button_forward.click(function(){
-      _webview.forward();
-    });
-
-    $button_refresh.click(function(){
-      _webview.reload();
-    });
-
-    $button_stop.click(function(){
-      _webview.stop();
-    });
-
-    $button_pin.click(function() {
-      if (this.pinned) {
-        this.pinned = false;
-      } else {
-        this.pinned = true;
-      }
-      this.store_tab_data();
-    }.bind(this));
-
-    $input_address_bar.keyup(function(e){
-      if(e.which === C.KEYCODES.ENTER){
-        _webview.src = address_bar_text_to_url($input_address_bar.val());
-
-      }
-    }.bind(this));
-
-    $input_tab_name.keyup(function(e){
-      if(e.which === C.KEYCODES.ENTER){
-        this.tab_name = $input_tab_name.val();
-        this.update_tab_text();
-        this.store_tab_data();
-      }
-    }.bind(this));
-
-    $input_tab_color.keyup(function(e){
-      if(e.which === C.KEYCODES.ENTER){
-        this.tab_color = $input_tab_color.val();
-        this.store_tab_data();
-      }
-    }.bind(this));
-
-    $find_input.keyup(function(e) {
-      var _find = $find_input.val();
-      if (_find !== _last_find || e.which === C.KEYCODES.ENTER) {
-        _last_find = _find;
-        _webview.find(_find);
-      }
-    }.bind(this));
-
-    $find_next.click(function() {
-      _webview.find($find_input.val());
-    });
-
-    $find_prev.click(function() {
-      _webview.find($find_input.val(), {
-        backward: true
-      });
-    });
-
-    _webview.addEventListener("findupdate", function(e){
-      if (e.searchText === '') {
-        $find_info.text('');
-      } else {
-        $find_info.text(e.activeMatchOrdinal + ' of ' + e.numberOfMatches);
-      }
-    });
-
-    _webview.addEventListener("loadredirect", function(e){
-      if(e.isTopLevel){
-        url_changed(e.newUrl);
-      }
-    });
-
-    _webview.addEventListener("loadstart", function(e){
-      if(e.isTopLevel){
-        url_changed(e.url);
-      }
-      this.$node.addClass("loading").removeClass("ready");
-      this.$content.addClass("loading").removeClass("ready");
-      update_button_states();
-    }.bind(this));
-
-    _webview.addEventListener("loadstop", function(){
-      url_changed(_webview.src);
-      update_title();
-      this.$node.removeClass("loading").addClass("ready");
-      this.$content.removeClass("loading").addClass("ready");
-      update_button_states();
-    }.bind(this));
-
-    _webview.addEventListener('newwindow', function(e) {
-      var $webview = $tab_webview_template.clone();
-      e.window.attach($webview.get(0));
-      open_new_tab(function(tab){
-        tab.setup_tab_content($webview);
-        if (e.windowOpenDisposition === 'ignore' ||
-            e.windowOpenDisposition === 'new_background_tab') {
-            // Quickly momentatily display the content to trigger webview to load
-            // TODO: improve this hack
-            tab.$content.css('z-index', -100).show();
-            setTimeout(function(){
-              tab.$content.css('z-index', 'initial').hide();
-            }, 100);
-        } else {
-          tab.select_tab();
-        }
-      }, false);
-    });
-
-    _webview.addEventListener('close', function() {
-      this.close_tab();
-    }.bind(this));
-
-    // Intercept requests for pinned tabs
-    _webview.request.onBeforeRequest.addListener(function(details) {
-      if (this.pinned && details.type === 'main_frame' &&
-        details.method === 'GET' && details.url !== this.url){
-        var $webview = $tab_webview_template.clone();
-        $webview.get(0).src = details.url;
-        open_new_tab(function(tab){
-          tab.setup_tab_content($webview);
-        }, true);
-        return {
-          cancel: true
-        };
-      }
-    }.bind(this),
-    {urls: ['*://*/*']}, ['blocking']);
-
-    return _new;
-  };
-
-  Tab.prototype.focus_address_bar = function(){
-    console.log("focus");
-    this.$content.find('input.address-bar').focus().select();
+    return false;
   };
 
   Tab.prototype.unselect_tab = function(){
     this.$node.removeClass('selected');
-    this.$content.hide();
+    this.content.hide();
     if (this.id === _current) {
       _current = null;
     }
   };
 
   Tab.prototype.escape_tab = function(){
-    if (this.$content.hasClass('find-enabled')){
-      this.$content.removeClass('find-enabled');
-      this.get_webview().stopFinding("clear");
-    }
+    this.with_content(function(content) {
+      content.escape_content();
+    });
   };
 
   Tab.prototype.start_find = function(){
-    this.$content.addClass('find-enabled');
-    var $find_input = this.$content.find('input.find-text').focus().select();
-    this.get_webview().find($find_input.val());
+    this.with_content(function(content) {
+      content.start_find();
+    });
   };
 
   Tab.prototype.close_tab = function(){
