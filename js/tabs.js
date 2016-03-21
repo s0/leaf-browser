@@ -95,9 +95,11 @@ define(['constants', 'storage', 'tab_content'], function(C, storage, tab_content
     });
   }
 
-  function focus_address_bar(){
-    with_current(function(tab){
-      tab.focus_address_bar();
+  function focus_address_bar() {
+    with_current(function(tab) {
+      tab.with_content(function(content) {
+        content.focus_address_bar();
+      });
     });
   }
 
