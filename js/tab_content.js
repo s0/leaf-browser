@@ -244,6 +244,7 @@ define(['constants', 'util'], function(C, util){
     },
 
     show: function() {
+      this.webview();
       this.$content.show();
     },
 
