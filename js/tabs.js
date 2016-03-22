@@ -135,20 +135,24 @@ define(['constants', 'storage', 'tab_content'], function(C, storage, tab_content
       this.update_by_data(tab_data);
     }
 
-    // Setup New Tab
-    var $tab = this.$node.children('.tab');
-    var $button = $tab.find('.button');
-    var $arrow = $tab.find('.arrow');
-    $button.click(this.button_clicked.bind(this));
-    $arrow.click(this.arrow_clicked.bind(this));
-
-    $button.find('.icon.close').click(function(e){
-      this.close_tab();
-      e.stopPropagation();
-    }.bind(this));
+    this._setup_listeners();
   }
 
   $.extend(Tab.prototype, {
+    _setup_listeners: function() {
+      var $tab = this.$node.children('.tab');
+      var $button = $tab.find('.button');
+      var $arrow = $tab.find('.arrow');
+      $button.click(this.button_clicked.bind(this));
+      $arrow.click(this.arrow_clicked.bind(this));
+
+      $button.find('.icon.close').click(function(e){
+        this.close_tab();
+        e.stopPropagation();
+      }.bind(this));
+    },
+
+
     has_children: function() {
       return this.$children.children().children('.tab').not('.hide').length !== 0;
     },
