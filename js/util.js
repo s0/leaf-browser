@@ -15,6 +15,14 @@ define(['constants'], function(C){
 
     url_to_address_bar_text: function(url){
       return url;
+    },
+
+    has_dragged: function(orig_event, current_event) {
+      var _drag_factor = 10;
+      return (current_event.clientX < orig_event.clientX - _drag_factor) ||
+          (current_event.clientX > orig_event.clientX + _drag_factor) ||
+          (current_event.clientY < orig_event.clientY - _drag_factor) ||
+          (current_event.clientY > orig_event.clientY + _drag_factor);
     }
   };
 

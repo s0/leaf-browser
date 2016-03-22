@@ -188,6 +188,15 @@ body {
             .tab-tree {
 
               .node {
+                opacity: 1;
+                transform: scale(1);
+                transition: opacity 0.3s, transform 0.3s;
+
+                &.detatched {
+                  z-index: 1000;
+                  opacity: 0.7;
+                  transform: scale(1.1);
+                }
 
                 @keyframes show-tab {
                     from {height: 0; opacity: 0;}

@@ -1,4 +1,5 @@
-define(['constants', 'storage', 'tab_content'], function(C, storage, tab_content){
+define(['constants', 'storage', 'tab_content', 'util'],
+  function(C, storage, tab_content, util){
   'use strict';
 
   var _next_tab_id = 0;
@@ -7,6 +8,7 @@ define(['constants', 'storage', 'tab_content'], function(C, storage, tab_content
   var $tabs;
   var _current = null;
   var _tabs = {};
+  var _dragging_tab = null;
 
   function init(templates){
     $node_template = templates['tab-tree-node'];
@@ -21,6 +23,21 @@ define(['constants', 'storage', 'tab_content'], function(C, storage, tab_content
     });
 
     storage.add_tabs_listener(load_tab_data);
+
+    $(window).mousemove(function(e) {
+      if (_dragging_tab) {
+        if (!_dragging_tab.detatched && util.has_dragged(_dragging_tab.e, e)){
+          _dragging_tab.tab.detatch();
+          _dragging_tab.detatched = true;
+        }
+      }
+    }).mouseup(function(e) {
+      if (_dragging_tab.detatched) {
+        _dragging_tab.tab.attach();
+        e.preventDefault();
+      }
+      _dragging_tab = null;
+    });
   }
 
   function load_tab_data(tabs){
@@ -143,8 +160,15 @@ define(['constants', 'storage', 'tab_content'], function(C, storage, tab_content
       var $tab = this.$node.children('.tab');
       var $button = $tab.find('.button');
       var $arrow = $tab.find('.arrow');
-      $button.click(this.button_clicked.bind(this));
       $arrow.click(this.arrow_clicked.bind(this));
+      $button.click(this.button_clicked.bind(this)).mousedown(function(e) {
+        if (!_dragging_tab){
+          _dragging_tab = {
+            tab: this,
+            e: e
+          };
+        }
+      }.bind(this));
 
       $button.find('.icon.close').click(function(e){
         this.close_tab();
@@ -403,6 +427,14 @@ define(['constants', 'storage', 'tab_content'], function(C, storage, tab_content
       this.parent = null;
       this.store_tab_data();
     },
+
+    detatch: function() {
+      this.$node.addClass('detatched');
+    },
+
+    attach: function() {
+      this.$node.removeClass('detatched');
+    }
   });
 
   return {
