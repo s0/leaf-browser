@@ -299,7 +299,7 @@ define(['constants', 'util'], function(C, util){
     },
 
     focus_address_bar: function() {
-      this.elems.$input_address_bar.focus();
+      this.elems.$input_address_bar.focus().select();
     },
 
     update_display: function() {
