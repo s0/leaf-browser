@@ -23,6 +23,19 @@ define(['constants'], function(C){
           (current_event.clientX > orig_event.clientX + _drag_factor) ||
           (current_event.clientY < orig_event.clientY - _drag_factor) ||
           (current_event.clientY > orig_event.clientY + _drag_factor);
+    },
+
+    is: function($elem) {
+      return {
+        an_ancestor_of: function($descendant) {
+          var is_ancestor = false;
+          $descendant.parents().each(function() {
+            if ($elem.is(this))
+              is_ancestor = true;
+          });
+          return is_ancestor;
+        }
+      };
     }
   };
 

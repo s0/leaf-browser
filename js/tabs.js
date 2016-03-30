@@ -244,16 +244,23 @@ define(['constants', 'storage', 'tab_content', 'util'],
 
       // Parent
       if (this.parent !== data.parent || !this.setup) {
-        if (data.parent !== null){
+        var _attached = false;
+        if (data.parent !== null) {
           var _parent_tab = _tabs[data.parent];
-          if (_parent_tab){
-            this.$node.appendTo(_parent_tab.$children);
-            this.parent = data.parent;
-            _parent_tab.update_display();
+          if (_parent_tab) {
+            if (util.is(this.$node).an_ancestor_of(_parent_tab.$node)) {
+              console.error("Cyclic Parents!", _parent_tab, this);
+            } else {
+              _attached = true;
+              this.$node.appendTo(_parent_tab.$children);
+              this.parent = data.parent;
+              _parent_tab.update_display();
+            }
           } else {
             console.error("Parent does not exist");
           }
-        } else {
+        }
+        if (!_attached) {
           this.$node.appendTo($tab_tree);
           this.parent = null;
         }
