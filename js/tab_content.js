@@ -23,6 +23,7 @@ define(['constants', 'util'], function(C, util){
       $button_forward: this.$content.find('.button-forward'),
       $button_refresh: this.$content.find('.button-refresh'),
       $button_stop: this.$content.find('.button-stop'),
+      $button_reset: this.$content.find('.button-reset'),
       $button_settings: this.$content.find('.button-settings'),
       $button_pin: this.$content.find('.button-pin'),
 
@@ -188,6 +189,12 @@ define(['constants', 'util'], function(C, util){
 
       this.elems.$button_stop.click(function(){
         this.webview().stop();
+      }.bind(this));
+
+      this.elems.$button_reset.click(function(){
+        $(this.webview()).remove();
+        this._webview = null;
+        this.tab.$node.removeClass("ready");
       }.bind(this));
 
       this.elems.$button_pin.click(function() {
