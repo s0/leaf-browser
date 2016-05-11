@@ -36,6 +36,13 @@ define(['constants', 'util'], function(C, util){
       $find_prev: this.$content.find('.button-find-prev'),
       $find_info: this.$content.find('.find-info'),
 
+      $dialog_box: this.$content.find('.dialog .box'),
+      $dialog_message: this.$content.find('.dialog .message'),
+      $dialog_input_text: this.$content.find('.dialog .input-text'),
+      $dialog_input: this.$content.find('.dialog input'),
+      $dialog_cancel: this.$content.find('.dialog .button-cancel'),
+      $dialog_ok: this.$content.find('.dialog .button-ok'),
+
       $alerts: this.$content.find('.alerts')
     };
     this._webview = null;
@@ -146,6 +153,41 @@ define(['constants', 'util'], function(C, util){
           }
         ]);
         e.preventDefault();
+      }.bind(this));
+
+      this._webview.addEventListener('dialog', function(e) {
+        console.log('alert', e);
+        e.preventDefault();
+        // Reset
+        this.elems.$dialog_input_text.hide();
+        this.elems.$dialog_input.val('');
+        this.elems.$dialog_cancel.hide();
+
+        // Setup
+        this.elems.$dialog_message.text(e.messageText);
+        if (e.messageType !== 'alert') {
+          this.elems.$dialog_cancel.show();
+          if (e.messageType === 'prompt') {
+            this.elems.$dialog_input_text.show();
+            this.elems.$dialog_input.val(e.defaultPromptText);
+          }
+        }
+
+        // Listeners
+        var close = function() {
+          this.elems.$dialog_box.removeClass('open');
+          this.elems.$dialog_cancel.off();
+          this.elems.$dialog_ok.off();
+        }.bind(this);
+        this.elems.$dialog_cancel.click(function(){
+          e.dialog.cancel();
+          close();
+        }.bind(this));
+        this.elems.$dialog_ok.click(function(){
+          e.dialog.ok(this.elems.$dialog_input.val());
+          close();
+        }.bind(this));
+        this.elems.$dialog_box.addClass('open');
       }.bind(this));
 
       // Intercept requests for pinned tabs
