@@ -7,7 +7,7 @@
 This project is an **experimental** browser UI that runs as a Google Chrome app
 and uses webview tags. It's in its **very early** stages at the moment.
 
-![Hex Browser Screenshot](screenshot.png)
+![Leaf Browser Screenshot](screenshot.png)
 
 ## Key Features
 
@@ -51,7 +51,7 @@ You can also install it like so:
    repository.
 
 You can now launch the app by visiting your Apps page (left hand side of the
-bookmarks bar, or visit `chrome://apps/`), and selecting "Hex Browser"
+bookmarks bar, or visit `chrome://apps/`), and selecting "Leaf Browser"
 
 ## Contribution
 
