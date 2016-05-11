@@ -32,7 +32,7 @@ define(['constants', 'storage', 'tab_content', 'util'],
         }
       }
     }).mouseup(function(e) {
-      if (_dragging_tab.detatched) {
+      if (_dragging_tab && _dragging_tab.detatched) {
         _dragging_tab.tab.attach();
         e.preventDefault();
       }
