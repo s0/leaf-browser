@@ -18,7 +18,7 @@ and uses webview tags. It's in its **very early** stages at the moment.
 * Not all tabs need to be loaded at once (they are loaded when you want them to
   be, and marked with a tick. You can also unload tabs to free up memory
   without fully closing them).
-* Ability to clour-code tabs.
+* Ability to colour-code tabs.
 
 ## Immidiate TODOs
 
